@@ -2,6 +2,8 @@ package ai.solace.emberml.nn.activations
 
 import ai.solace.emberml.nn.Layer
 import ai.solace.emberml.tensor.common.EmberTensor
+import ai.solace.emberml.tensor.common.EmberShape
+import ai.solace.emberml.tensor.common.EmberDType
 import ai.solace.emberml.backend.BackendRegistry
 
 /**
@@ -12,19 +14,143 @@ import ai.solace.emberml.backend.BackendRegistry
 class ReLU : Layer() {
     
     override suspend fun forward(input: EmberTensor): EmberTensor {
-        // For now, implement a simple version
-        // In a full implementation, this would use backend-specific operations
-        return input // Placeholder - actual ReLU implementation would clip negative values to 0
+        val backend = BackendRegistry.getCurrentBackend()
+        
+        // Create a zero tensor with the same shape and dtype as input
+        val zeroData = when (input.dtype) {
+            EmberDType.FLOAT32 -> FloatArray(input.shape.totalSize()) { 0.0f }
+            EmberDType.FLOAT64 -> DoubleArray(input.shape.totalSize()) { 0.0 }
+            EmberDType.INT32 -> IntArray(input.shape.totalSize()) { 0 }
+            EmberDType.INT64 -> LongArray(input.shape.totalSize()) { 0L }
+            else -> throw IllegalArgumentException("ReLU only supports numeric types")
+        }
+        
+        val zeroBackendTensor = backend.createTensor(zeroData, input.shape.dimensions, input.dtype)
+        val zeroTensor = EmberTensor(
+            shape = input.shape,
+            dtype = input.dtype,
+            device = input.device,
+            requiresGrad = false,
+            backendTensor = zeroBackendTensor
+        )
+        
+        // For now, return the input (placeholder until maximum operation is available)
+        // TODO: Implement actual max(0, x) operation
+        return input
     }
     
     override suspend fun backward(gradOutput: EmberTensor): EmberTensor {
         // ReLU gradient: 1 if input > 0, 0 otherwise
-        // This is a simplified implementation
+        // This is a simplified implementation - in practice we'd need to store the input from forward pass
         return gradOutput
     }
     
     override fun parameters(): Map<String, EmberTensor> {
         // Activation functions typically have no parameters
+        return emptyMap()
+    }
+    
+    override suspend fun updateParameters(gradients: Map<String, EmberTensor>, learningRate: Float) {
+        // No parameters to update
+    }
+}
+
+/**
+ * Identity activation function (no activation).
+ * 
+ * Applies the function: f(x) = x
+ */
+class Identity : Layer() {
+    
+    override suspend fun forward(input: EmberTensor): EmberTensor {
+        return input
+    }
+    
+    override suspend fun backward(gradOutput: EmberTensor): EmberTensor {
+        return gradOutput
+    }
+    
+    override fun parameters(): Map<String, EmberTensor> {
+        return emptyMap()
+    }
+    
+    override suspend fun updateParameters(gradients: Map<String, EmberTensor>, learningRate: Float) {
+        // No parameters to update
+    }
+}
+
+/**
+ * Linear activation function with optional scale and bias.
+ * 
+ * Applies the function: f(x) = scale * x + bias
+ */
+class Linear(
+    private val scale: Float = 1.0f,
+    private val bias: Float = 0.0f
+) : Layer() {
+    
+    override suspend fun forward(input: EmberTensor): EmberTensor {
+        val backend = BackendRegistry.getCurrentBackend()
+        
+        // Create scale tensor
+        val scaleData = when (input.dtype) {
+            EmberDType.FLOAT32 -> FloatArray(1) { scale }
+            EmberDType.FLOAT64 -> DoubleArray(1) { scale.toDouble() }
+            else -> throw IllegalArgumentException("Linear activation only supports floating point types")
+        }
+        
+        val scaleBackendTensor = backend.createTensor(scaleData, intArrayOf(1), input.dtype)
+        val scaleTensor = EmberTensor(
+            shape = EmberShape.of(1),
+            dtype = input.dtype,
+            device = input.device,
+            requiresGrad = false,
+            backendTensor = scaleBackendTensor
+        )
+        
+        // Create bias tensor
+        val biasData = when (input.dtype) {
+            EmberDType.FLOAT32 -> FloatArray(1) { bias }
+            EmberDType.FLOAT64 -> DoubleArray(1) { bias.toDouble() }
+            else -> throw IllegalArgumentException("Linear activation only supports floating point types")
+        }
+        
+        val biasBackendTensor = backend.createTensor(biasData, intArrayOf(1), input.dtype)
+        val biasTensor = EmberTensor(
+            shape = EmberShape.of(1),
+            dtype = input.dtype,
+            device = input.device,
+            requiresGrad = false,
+            backendTensor = biasBackendTensor
+        )
+        
+        // Apply: scale * input + bias (using broadcasting)
+        return input * scaleTensor + biasTensor
+    }
+    
+    override suspend fun backward(gradOutput: EmberTensor): EmberTensor {
+        // Linear gradient: scale * gradOutput
+        val backend = BackendRegistry.getCurrentBackend()
+        
+        val scaleData = when (gradOutput.dtype) {
+            EmberDType.FLOAT32 -> FloatArray(1) { scale }
+            EmberDType.FLOAT64 -> DoubleArray(1) { scale.toDouble() }
+            else -> throw IllegalArgumentException("Linear activation only supports floating point types")
+        }
+        
+        val scaleBackendTensor = backend.createTensor(scaleData, intArrayOf(1), gradOutput.dtype)
+        val scaleTensor = EmberTensor(
+            shape = EmberShape.of(1),
+            dtype = gradOutput.dtype,
+            device = gradOutput.device,
+            requiresGrad = false,
+            backendTensor = scaleBackendTensor
+        )
+        
+        return gradOutput * scaleTensor
+    }
+    
+    override fun parameters(): Map<String, EmberTensor> {
         return emptyMap()
     }
     
