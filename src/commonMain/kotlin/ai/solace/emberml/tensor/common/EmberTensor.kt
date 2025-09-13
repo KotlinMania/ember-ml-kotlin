@@ -18,7 +18,7 @@ class EmberTensor(
     override val dtype: EmberDType,
     override val device: String = "cpu",
     override val requiresGrad: Boolean = false,
-    private val backendTensor: Any
+    internal val backendTensor: Any
 ) : TensorInterface {
 
     /**
