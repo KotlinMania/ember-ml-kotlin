@@ -41,21 +41,82 @@ Track the 5 main implementation milestones for Ember ML Kotlin:
 1. ✅ **Fixed 32-bit limb inefficiency**: Implemented OptimizedMegaTensorBackend with hybrid storage
 2. ✅ **Added missing core operations**: Aggregations (sum, mean, min, max), indexing, mathematical functions
 3. ✅ **Achieved significant NumPy parity**: ~70% operation coverage with comprehensive math library
+4. ✅ **Fixed compilation errors**: INT8/INT16 dtype expansion documented as TODO
 
-**UPDATED PRIORITY: Complete Tensor System (Final 10%)**
+**IMMEDIATE PRIORITY: Complete Tensor System (Final 10% of Milestone 2) - 1-2 weeks**
 1. **Add broadcasting system**: Automatic shape compatibility for tensor operations
 2. **Implement multi-dimensional slicing**: Advanced indexing operations (tensor[i:j, k:l])
-3. **Performance optimization**: Benchmarking and optimization of new storage system
+3. **Add missing tensor operations**: expand_dims, squeeze, permute, transpose operations
 
-**Previous Priority (Milestone 4):**
-1. Implement Metal kernel integration for Apple platforms
-2. Port SVD and other algorithms from Python implementation
-3. Create abstractions for Metal kernel execution
+**HIGH PRIORITY: Expand ops Module (3-4 weeks)**
+1. **Critical math operations**: log10, log2, sinh, cosh, floor, ceil, mod, clip, gradient
+2. **Comparison operations**: not_equal, less_equal, logical_and, logical_or, where, isnan
+3. **stats module**: mean, std, percentile, correlation (15+ statistical functions)
+4. **linearalg module**: svd, qr, eig, cholesky, inv, solve, det, norm (15+ linear algebra functions)
 
-**Future Priority (Milestone 5):**
-1. Build neural network components (layers, activations, optimizers)
+**MEDIUM PRIORITY: Neural Network Core (4-5 weeks)**
+1. **Essential layers**: Conv1D/2D, MaxPool/AvgPool, Dropout, BatchNorm
+2. **Complete activation functions**: Softmax, Softplus, LeakyReLU, ELU, GELU
+3. **Loss functions**: mse, binary_crossentropy, categorical_crossentropy, huber_loss
+4. **Core optimizers**: Adam, AdamW, RMSprop, Adagrad
 
-## 🔧 Recent Major Improvements (Tensor System Optimization)
+**FUTURE PRIORITY: Advanced Features (6+ weeks)**
+1. **Advanced neural architectures**: RNN/LSTM/GRU, Attention, Transformer
+2. **Training infrastructure**: Learning rate schedulers, early stopping, checkpointing
+3. **Specialized components**: Liquid neural networks, wave processing
+
+## 📊 Comprehensive Function Porting Analysis
+
+### Current Implementation Status
+- **Kotlin Files**: 99 files implemented
+- **Python Source**: 388 files total (25% completion)
+- **Core Functions Ported**: ~75 functions (~25% of estimated 300-400 total)
+
+### Missing Critical Functions by Module
+
+#### ops Module (Python has 177 functions)
+**Math Operations (HIGH PRIORITY)**:
+- Missing: log10(), log2(), sinh(), cosh(), floor(), ceil(), mod(), clip(), gradient()
+- Missing: floor_divide(), negative(), power() variants
+
+**Comparison Operations (HIGH PRIORITY)**:
+- Missing: not_equal(), less_equal(), greater_equal()
+- Missing: logical_and(), logical_or(), logical_not(), logical_xor()
+- Missing: allclose(), isclose(), where(), isnan()
+
+**Array Manipulation (MEDIUM PRIORITY)**:
+- Missing: vstack(), hstack(), concatenate(), split(), tile(), repeat()
+
+#### stats Module (15+ functions needed)
+- Missing: median(), mode(), std(), var(), percentile(), quantile()
+- Missing: histogram(), correlation(), covariance()
+
+#### linearalg Module (15+ functions needed)  
+- Missing: svd(), qr(), eig(), eigvals(), cholesky()
+- Missing: inv(), pinv(), solve(), det(), norm(), trace()
+
+#### nn.modules (50+ components needed)
+**Basic Layers**:
+- Missing: Conv1D/Conv2D, MaxPool/AvgPool, Dropout, BatchNorm
+
+**Activation Functions**:
+- Missing: Softmax, Softplus, LeakyReLU, ELU, GELU
+
+**Loss Functions**:
+- Missing: mse(), binary_crossentropy(), categorical_crossentropy()
+
+**Optimizers**:
+- Missing: Adam, AdamW, RMSprop, Adagrad, LBFGS
+
+### Estimated Completion Timeline
+- **MVP (Critical Functions)**: 6-8 weeks
+- **Production Ready**: 12-15 weeks  
+- **Full Feature Parity**: 18-20 weeks
+
+### Function Implementation Priority
+🔴 **CRITICAL**: Broadcasting, core math, basic layers, essential losses
+🟡 **HIGH**: Statistics, linear algebra, advanced layers, training utils
+🟢 **MEDIUM**: Specialized architectures, wave processing, advanced optimizers
 
 ### Memory Efficiency Revolution
 - **OptimizedMegaTensorBackend**: New hybrid storage system replacing inefficient MegaNumber-only storage
