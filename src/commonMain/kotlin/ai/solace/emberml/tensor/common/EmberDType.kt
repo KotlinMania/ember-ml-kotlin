@@ -11,6 +11,9 @@ enum class EmberDType {
     INT64,
     UINT8,
     BOOL;
+    // TODO: Add INT8, INT16 support - requires updating all when expressions
+    // INT8,
+    // INT16,
 
     /**
      * Returns a string representation of the data type.
@@ -52,6 +55,9 @@ enum class EmberDType {
             "int64", "long" -> INT64
             "uint8", "byte" -> UINT8
             "bool", "boolean" -> BOOL
+            // TODO: Add when INT8, INT16 are enabled
+            // "int8", "sbyte" -> INT8
+            // "int16", "short" -> INT16
             else -> null
         }
     }
@@ -64,3 +70,6 @@ val int32 = EmberDType.INT32
 val int64 = EmberDType.INT64
 val uint8 = EmberDType.UINT8
 val bool = EmberDType.BOOL
+// TODO: Add when INT8, INT16 are enabled
+// val int8 = EmberDType.INT8
+// val int16 = EmberDType.INT16

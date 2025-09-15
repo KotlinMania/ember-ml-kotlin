@@ -79,8 +79,6 @@ object BackendUtils {
             EmberDType.INT32 -> IntArray(totalSize) { 0 }
             EmberDType.INT64 -> LongArray(totalSize) { 0L }
             EmberDType.UINT8 -> ByteArray(totalSize) { 0 }
-            EmberDType.INT8 -> ByteArray(totalSize) { 0 }
-            EmberDType.INT16 -> ShortArray(totalSize) { 0 }
             EmberDType.BOOL -> BooleanArray(totalSize) { false }
         }
         return createTensor(data, shape, dtype, device)
@@ -102,8 +100,6 @@ object BackendUtils {
             EmberDType.INT32 -> IntArray(totalSize) { 1 }
             EmberDType.INT64 -> LongArray(totalSize) { 1L }
             EmberDType.UINT8 -> ByteArray(totalSize) { 1 }
-            EmberDType.INT8 -> ByteArray(totalSize) { 1 }
-            EmberDType.INT16 -> ShortArray(totalSize) { 1 }
             EmberDType.BOOL -> BooleanArray(totalSize) { true }
         }
         return createTensor(data, shape, dtype, device)
