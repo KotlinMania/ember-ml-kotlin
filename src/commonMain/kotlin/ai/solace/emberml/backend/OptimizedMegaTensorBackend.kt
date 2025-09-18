@@ -21,6 +21,18 @@ import ai.solace.emberml.backend.storage.TensorStorage
 class OptimizedMegaTensorBackend : Backend {
     // The default device for tensor operations
     private var defaultDevice: String = "cpu"
+    
+    // Mathematical operations helper
+    private val mathOps = MathematicalOperations(this)
+    
+    // Statistical operations helper
+    private val statsOps = StatisticalOperations(this)
+    
+    // Linear algebra operations helper
+    private val linalgOps = LinearAlgebraOperations(this)
+    
+    // Array manipulation operations helper
+    private val arrayOps = ArrayManipulationOperations(this)
 
     /**
      * An optimized tensor implementation using hybrid storage.
