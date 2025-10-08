@@ -17,51 +17,6 @@ repositories {
 
 val kcoroLib = layout.projectDirectory.file("external/kcoro/lab/mirror/core/build/lib/libkcoro.a")
 
-val buildKcoro by tasks.registering(Exec::class) {
-    group = "kcoro"
-    description = "Build kcoro C static library"
-    workingDir = file("external/kcoro/lab/mirror/core")
-    commandLine("make")
-    inputs.dir("external/kcoro/lab/mirror/core/src")
-    inputs.dir("external/kcoro/lab/mirror/arch")
-    inputs.file("external/kcoro/lab/mirror/core/Makefile")
-    outputs.file(kcoroLib)
-}
-
-val kcoroCppBuildDir = layout.buildDirectory.dir("kcoro_cpp")
-val kcoroCppLib = kcoroCppBuildDir.map { it.file("libkcoro_cpp.a") }
-
-val configureKcoroCpp by tasks.registering(Exec::class) {
-    group = "kcoro"
-    description = "Configure kcoro C++ build"
-    commandLine(
-        "cmake",
-        "-S",
-        "external/kcoro_cpp",
-        "-B",
-        kcoroCppBuildDir.get().asFile.absolutePath,
-        "-DCMAKE_BUILD_TYPE=Release",
-    )
-    inputs.file("external/kcoro_cpp/CMakeLists.txt")
-    outputs.file(kcoroCppBuildDir.map { it.file("CMakeCache.txt") })
-}
-
-val buildKcoroCpp by tasks.registering(Exec::class) {
-    group = "kcoro"
-    description = "Build kcoro C++ static library"
-    dependsOn(configureKcoroCpp)
-    commandLine(
-        "cmake",
-        "--build",
-        kcoroCppBuildDir.get().asFile.absolutePath,
-        "--config",
-        "Release",
-    )
-    inputs.dir("external/kcoro_cpp/src")
-    inputs.dir("external/kcoro_cpp/arch")
-    outputs.file(kcoroCppLib)
-}
-
 kotlin {
     // Native targets for Kotlin Native build
     linuxX64()
@@ -70,28 +25,6 @@ kotlin {
         binaries {
             executable("poc") {
                 entryPoint = "ai.solace.klang.poc.main"
-            }
-        }
-        val kcoroInclude = layout.projectDirectory.dir("external/kcoro/lab/mirror/include")
-        val kcoroLibDir = layout.projectDirectory.dir("external/kcoro/lab/mirror/core/build/lib")
-        val kcoroCppLibDirProvider = kcoroCppBuildDir
-
-        compilations["main"].cinterops {
-            val kcoro by creating {
-                definitionFile = file("src/nativeInterop/cinterop/kcoro.def")
-                compilerOpts("-I${kcoroInclude.asFile.absolutePath}")
-            }
-        }
-
-        binaries.all {
-            linkerOpts(
-                "-L${kcoroLibDir.asFile.absolutePath}",
-                "-L${kcoroCppLibDirProvider.get().asFile.absolutePath}",
-                "-lkcoro",
-                "-lkcoro_cpp",
-            )
-            linkTaskProvider.configure {
-                dependsOn(buildKcoro, buildKcoroCpp)
             }
         }
     }
@@ -138,6 +71,7 @@ kotlin {
             dependencies {
                 // Native-specific dependencies
             }
+            kotlin.srcDir("src/nativeMain/kotlin")
         }
         val nativeTest by creating {
             dependsOn(commonTest)
@@ -147,13 +81,21 @@ kotlin {
         }
 
         // Configure all native targets to use the native source sets
-        val linuxX64Main by getting { dependsOn(nativeMain) }
+        val linuxX64Main by getting {
+            dependsOn(nativeMain)
+        }
         val linuxX64Test by getting { dependsOn(nativeTest) }
-        val macosX64Main by getting { dependsOn(nativeMain) }
+        val macosX64Main by getting {
+            dependsOn(nativeMain)
+        }
         val macosX64Test by getting { dependsOn(nativeTest) }
-        val macosArm64Main by getting { dependsOn(nativeMain) }
+        val macosArm64Main by getting {
+            dependsOn(nativeMain)
+        }
         val macosArm64Test by getting { dependsOn(nativeTest) }
-        val mingwX64Main by getting { dependsOn(nativeMain) }
+        val mingwX64Main by getting {
+            dependsOn(nativeMain)
+        }
         val mingwX64Test by getting { dependsOn(nativeTest) }
 
         // JavaScript source sets
@@ -167,15 +109,6 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test-js:1.9.0")
             }
         }
-    }
-}
-
-tasks.withType<CInteropProcess>().configureEach {
-    if (name.contains("Kcoro_cpp", ignoreCase = true)) {
-        dependsOn(buildKcoroCpp)
-    }
-    if (name.contains("Kcoro", ignoreCase = true) && !name.contains("Kcoro_cpp", ignoreCase = true)) {
-        dependsOn(buildKcoro)
     }
 }
 

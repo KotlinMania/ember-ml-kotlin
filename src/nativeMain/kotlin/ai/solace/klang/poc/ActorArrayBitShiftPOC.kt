@@ -4,7 +4,7 @@ package ai.solace.klang.poc
 
 import ai.solace.klang.kcoro.KcoroChannel
 import ai.solace.klang.kcoro.KcoroInterop
-import ai.solace.kcoro.KC_BUFFERED
+import ai.solace.klang.kcoro.KC_BUFFERED
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
