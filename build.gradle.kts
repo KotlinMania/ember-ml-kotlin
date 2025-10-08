@@ -15,16 +15,16 @@ repositories {
     mavenCentral()
 }
 
-val kcoroLib = layout.projectDirectory.file("external/kcoro/core/build/lib/libkcoro.a")
+val kcoroLib = layout.projectDirectory.file("external/kcoro/lab/mirror/core/build/lib/libkcoro.a")
 
 val buildKcoro by tasks.registering(Exec::class) {
     group = "kcoro"
     description = "Build kcoro C static library"
-    workingDir = file("external/kcoro/core")
+    workingDir = file("external/kcoro/lab/mirror/core")
     commandLine("make")
-    inputs.dir("external/kcoro/core/src")
-    inputs.dir("external/kcoro/arch")
-    inputs.file("external/kcoro/core/Makefile")
+    inputs.dir("external/kcoro/lab/mirror/core/src")
+    inputs.dir("external/kcoro/lab/mirror/arch")
+    inputs.file("external/kcoro/lab/mirror/core/Makefile")
     outputs.file(kcoroLib)
 }
 
@@ -72,22 +72,14 @@ kotlin {
                 entryPoint = "ai.solace.klang.poc.main"
             }
         }
-        val kcoroInclude = layout.projectDirectory.dir("external/kcoro/include")
-        val kcoroCppInclude = layout.projectDirectory.dir("external/kcoro_cpp/include")
-        val kcoroLibDir = layout.projectDirectory.dir("external/kcoro/core/build/lib")
+        val kcoroInclude = layout.projectDirectory.dir("external/kcoro/lab/mirror/include")
+        val kcoroLibDir = layout.projectDirectory.dir("external/kcoro/lab/mirror/core/build/lib")
         val kcoroCppLibDirProvider = kcoroCppBuildDir
 
         compilations["main"].cinterops {
             val kcoro by creating {
                 definitionFile = file("src/nativeInterop/cinterop/kcoro.def")
                 compilerOpts("-I${kcoroInclude.asFile.absolutePath}")
-            }
-            val kcoroCpp by creating {
-                definitionFile = file("src/nativeInterop/cinterop/kcoro_cpp.def")
-                compilerOpts(
-                    "-I${kcoroInclude.asFile.absolutePath}",
-                    "-I${kcoroCppInclude.asFile.absolutePath}",
-                )
             }
         }
 
