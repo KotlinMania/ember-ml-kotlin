@@ -113,11 +113,9 @@ kotlin {
             }
             kotlin.srcDir("src/commonMain/kotlin")
             resources.srcDir("src/commonMain/resources")
-            // No exclusions for MegaFloat.kt and MegaInteger.kt anymore
-            // kotlin.exclude(
-            //     "ai/solace/emberml/tensor/bitwise/MegaFloat.kt",
-            //     "ai/solace/emberml/tensor/bitwise/MegaInteger.kt"
-            // )
+            kotlin.exclude(
+                "ai/solace/emberml/**",
+            )
         }
         val commonTest by getting {
             dependencies {
