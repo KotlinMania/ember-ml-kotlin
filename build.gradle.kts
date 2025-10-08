@@ -17,7 +17,13 @@ kotlin {
     // Native targets for Kotlin Native build
     linuxX64()
     macosX64()
-    macosArm64()
+    macosArm64 {
+        binaries {
+            executable("poc") {
+                entryPoint = "ai.solace.klang.poc.main"
+            }
+        }
+    }
     mingwX64()
 
     // JavaScript target

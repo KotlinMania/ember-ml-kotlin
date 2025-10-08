@@ -1637,4 +1637,33 @@ class OptimizedMegaTensorBackend : Backend {
             else -> MegaInteger.fromValue(0)
         }
     }
+    
+    // Stub implementations - TODO: Implement these with klang
+    override fun matmul(a: Any, b: Any): Any = TODO("matmul not yet implemented")
+    override fun cast(tensor: Any, dtype: EmberDType): Any = TODO("cast not yet implemented")
+    override fun reshape(tensor: Any, newShape: IntArray): Any = TODO("reshape not yet implemented")
+    override fun transpose(tensor: Any, axes: IntArray?): Any = TODO("transpose not yet implemented")
+    override fun toDevice(tensor: Any, device: String): Any = tensor
+    override fun getAvailableDevices(): List<String> = listOf("cpu")
+    override fun setDefaultDevice(device: String) { /* no-op for now */ }
+    override fun getDefaultDevice(): String = "cpu"
+    
+    // Bitwise operations - TODO: Implement using klang BitPrimitives
+    override fun leftShift(x: Any, shifts: Any): Any = TODO("leftShift not yet implemented")
+    override fun rightShift(x: Any, shifts: Any): Any = TODO("rightShift not yet implemented")
+    override fun rotateLeft(x: Any, shifts: Any, bitWidth: Int): Any = TODO("rotateLeft not yet implemented")
+    override fun rotateRight(x: Any, shifts: Any, bitWidth: Int): Any = TODO("rotateRight not yet implemented")
+    override fun countOnes(x: Any): Any = TODO("countOnes not yet implemented")
+    override fun countZeros(x: Any): Any = TODO("countZeros not yet implemented")
+    override fun getBit(x: Any, position: Any): Any = TODO("getBit not yet implemented")
+    override fun setBit(x: Any, position: Any, value: Any): Any = TODO("setBit not yet implemented")
+    override fun toggleBit(x: Any, position: Any): Any = TODO("toggleBit not yet implemented")
+    override fun bitwiseAnd(x: Any, y: Any): Any = TODO("bitwiseAnd not yet implemented")
+    override fun bitwiseOr(x: Any, y: Any): Any = TODO("bitwiseOr not yet implemented")
+    override fun bitwiseXor(x: Any, y: Any): Any = TODO("bitwiseXor not yet implemented")
+    override fun bitwiseNot(x: Any): Any = TODO("bitwiseNot not yet implemented")
+    override fun binaryWaveInterference(waves: List<Any>, mode: String): Any = TODO("binaryWaveInterference not yet implemented")
+    override fun binaryWavePropagate(wave: Any, shift: Any): Any = TODO("binaryWavePropagate not yet implemented")
+    override fun createDutyCycle(length: Int, dutyCycle: Float, dtype: EmberDType): Any = TODO("createDutyCycle not yet implemented")
+    override fun generateBlockySin(length: Int, halfPeriod: Int, dtype: EmberDType): Any = TODO("generateBlockySin not yet implemented")
 }

@@ -1,8 +1,19 @@
 # Ember ML Kotlin Implementation Checklist
 
-## 🎯 Implementation Strategy Milestones
+## 🎯 NEW ARCHITECTURE: Ember as Single Backend
 
-Track the 5 main implementation milestones for Ember ML Kotlin:
+**Major Pivot**: We're no longer building a multi-backend system. Ember ML Kotlin **IS** the backend!
+
+### Architecture Changes (Jan 2025)
+
+- ✅ **KLang Integration Complete** - Bit-exact cross-platform numerics
+- 🔄 **New Design**: MLX-inspired API (`Ember.Tensor()`, `Ember.Dtype`)
+- 🔄 **Single Backend**: Ember is the backend, not a switcher
+- 🔄 **Scalar-First**: Everything is a tensor (like MLX)
+
+See `EMBER_KOTLIN_ARCHITECTURE.md` for full design.
+
+## 🎯 Original Milestones (Being Replaced)
 
 - [x] **Milestone 1: Port the bitwise and bizarromath modules first** ✅ COMPLETE
   - All core bitwise operations and MegaNumber/MegaBinary classes ported and working
@@ -16,24 +27,28 @@ Track the 5 main implementation milestones for Ember ML Kotlin:
   - ✅ **FIXED**: Added core operations (aggregations: sum, mean, min, max; indexing: get/set element)
   - ✅ **IMPROVED**: Achieved ~70% NumPy operation parity with mathematical functions
   - ❌ **REMAINING**: Broadcasting system and multi-dimensional slicing operations
+  - **NOTE**: Will be replaced by new Ember API
 
 - [x] **Milestone 3: Implement actor system** ✅ COMPLETE
   - Actor architecture implemented with Kotlin coroutines and channels
   - Actor system, supervision hierarchy, and message passing protocols complete
+  - **NOTE**: May integrate into new Ember async operations
 
-- [ ] **Milestone 4: Add Metal kernel integration** 🔄 30% COMPLETE
+- [ ] **Milestone 4: Add Metal kernel integration** 🔄 30% COMPLETE → REDESIGNING
   - ✅ Created Metal backend foundation with interfaces and abstractions
   - ✅ Implemented Metal kernel bindings structure for Kotlin Native  
   - ✅ Ported SVD implementation scaffolding from mlxtests/metal_kernel_method/svd_metal.py
   - ✅ Created Metal kernel execution abstractions
   - ✅ Integrated Metal backend with existing Backend system
+  - **NEW**: Will be expect/actual for Metal-specific ops (not a "backend")
   - Missing: Platform-specific Metal implementations, full kernel compilation
 
 - [ ] **Milestone 5: Build neural network components** ❌ NOT STARTED (0%)
   - Neural network layers, activations, optimizers needed
   - Training utilities to be implemented
+  - **NOTE**: Will build on new Ember API
 
-**Overall Progress: 75% Complete (3.4/5 milestones) - MAJOR TENSOR IMPROVEMENTS IMPLEMENTED**
+**Overall Progress: 75% Complete (3.4/5 milestones) - MAJOR ARCHITECTURE REDESIGN IN PROGRESS**
 
 ## 🚀 Next Priority Actions
 
@@ -276,3 +291,242 @@ Track the 5 main implementation milestones for Ember ML Kotlin:
 - [x] Architecture documentation explaining actor system
 - [ ] Examples demonstrating usage patterns
 - [ ] Performance guidelines and best practices
+
+## 🚀 NEW MILESTONES: Pure Ember Architecture
+
+### Milestone A: KLang Float Types ✅ 50% COMPLETE
+
+- [x] **CFloat32** - Fully implemented with Float32Math (29KB compiler-rt port)
+- [x] **HPC16x4 / HPC16x8** - Limb engine for 128-bit operations
+- [x] **SwAR** - SIMD Within A Register for 2-4x speedups
+- [ ] **CFloat16** - 16-bit float (port from compiler-rt)
+- [ ] **CFloat64** - 64-bit float using HPC16x8
+- [ ] **CFloat128** - 128-bit float (optional, future)
+- [ ] **CBF16** - BFloat16 for ML (partially implemented)
+
+**Priority**: CFloat16 and CFloat64 are critical for ML workloads.
+
+### Milestone B: Scalar System 🔄 NOT STARTED
+
+**Goal**: Wrap KLang types in Scalar.Float16/32/64
+
+- [ ] Create `ai.solace.ember.scalar.Scalar` sealed class
+- [ ] Implement `Scalar.Float16` wrapper around CFloat16
+- [ ] Implement `Scalar.Float32` wrapper around CFloat32
+- [ ] Implement `Scalar.Float64` wrapper around CFloat64
+- [ ] Implement `Scalar.Int32` wrapper (native Kotlin Int)
+- [ ] Add arithmetic operators (+, -, *, /)
+- [ ] Add conversion methods (toFloat, toDouble)
+- [ ] Write comprehensive tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/scalar/Scalar.kt`
+- `src/commonTest/kotlin/ai/solace/ember/scalar/ScalarTest.kt`
+
+### Milestone C: DType System 🔄 NOT STARTED
+
+**Goal**: Clean type hierarchy for Ember
+
+- [ ] Create `ai.solace.ember.dtype.EmberDType` sealed class
+- [ ] Define Float16, Float32, Float64, Float128 dtypes
+- [ ] Define Int8, Int16, Int32, Int64, UInt* dtypes
+- [ ] Define Bool, Complex*, Q4_0, Q8_0 dtypes
+- [ ] Implement type properties (byteSize, name)
+- [ ] Add type conversion utilities
+- [ ] Write tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/dtype/EmberDType.kt`
+- `src/commonMain/kotlin/ai/solace/ember/dtype/TypeConversions.kt`
+- `src/commonTest/kotlin/ai/solace/ember/dtype/DTypeTest.kt`
+
+### Milestone D: Storage System 🔄 NOT STARTED
+
+**Goal**: Efficient tensor data storage
+
+- [ ] Design storage interface
+- [ ] Implement Float32Storage (Array<CFloat32>)
+- [ ] Implement Float16Storage (Array<CFloat16>)
+- [ ] Implement Float64Storage (Array<CFloat64>)
+- [ ] Implement Int32Storage (IntArray)
+- [ ] Add memory layout utilities
+- [ ] Write tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/storage/TensorStorage.kt`
+- `src/commonMain/kotlin/ai/solace/ember/storage/Float32Storage.kt`
+
+### Milestone E: Basic Tensor Operations 🔄 NOT STARTED
+
+**Goal**: Get `Ember.array()` working
+
+- [ ] Create `EmberTensor` class with shape, dtype, device
+- [ ] Implement `Ember.array(data, dtype)` for scalars
+- [ ] Implement `Ember.array(data, dtype)` for vectors
+- [ ] Implement `Ember.array(data, dtype)` for matrices
+- [ ] Add shape inference for nested lists
+- [ ] Implement element-wise add using CFloat32
+- [ ] Implement element-wise multiply using CFloat32
+- [ ] Implement reshape, transpose
+- [ ] Implement indexing (get/set)
+- [ ] Write tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/tensor/EmberTensor.kt`
+- `src/commonMain/kotlin/ai/solace/ember/tensor/TensorCreation.kt`
+- `src/commonMain/kotlin/ai/solace/ember/tensor/TensorOps.kt`
+
+### Milestone F: Math Operations 🔄 NOT STARTED
+
+**Goal**: Port MLX math_ops using KLang
+
+- [ ] Implement sin, cos, tan using Float32Math
+- [ ] Implement exp, log using Float32Math
+- [ ] Implement sqrt using Float32Math
+- [ ] Add element-wise operators (+, -, *, /)
+- [ ] Implement abs, square, power
+- [ ] Write tests comparing to Float32Math directly
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/ops/MathOps.kt`
+- `src/commonMain/kotlin/ai/solace/ember/ops/TrigOps.kt`
+
+### Milestone G: Main Ember API 🔄 NOT STARTED
+
+**Goal**: MLX-style top-level API
+
+- [ ] Create `Ember` object as main entry point
+- [ ] Add `Ember.Dtype` namespace (float32, float64, etc.)
+- [ ] Add `Ember.array()` function
+- [ ] Add `Ember.zeros()`, `Ember.ones()`
+- [ ] Add `Ember.arange()`, `Ember.linspace()`
+- [ ] Add math functions (sin, cos, exp, etc.)
+- [ ] Add type aliases (`typealias Tensor = EmberTensor`)
+- [ ] Write integration tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/Ember.kt`
+- `src/commonTest/kotlin/ai/solace/ember/EmberAPITest.kt`
+
+### Milestone H: Broadcasting & Advanced Ops 🔄 NOT STARTED
+
+**Goal**: NumPy-style broadcasting
+
+- [ ] Implement broadcasting rules
+- [ ] Add reduction operations (sum, mean, max, min)
+- [ ] Add matrix multiplication (matmul)
+- [ ] Add concatenate, stack, split
+- [ ] Add advanced indexing
+- [ ] Write tests
+
+**Files to create**:
+- `src/commonMain/kotlin/ai/solace/ember/broadcast/Broadcasting.kt`
+- `src/commonMain/kotlin/ai/solace/ember/ops/ReductionOps.kt`
+- `src/commonMain/kotlin/ai/solace/ember/ops/MatrixOps.kt`
+
+### Milestone I: SWAR Integration 🔄 NOT STARTED
+
+**Goal**: Use SwAR for 2-4x speedups
+
+- [ ] Identify SWAR-friendly operations
+- [ ] Implement packed tensor operations
+- [ ] Add SWAR-accelerated dot products
+- [ ] Benchmark vs scalar operations
+- [ ] Write tests
+
+### Milestone J: Metal Hooks (Future)
+
+**Goal**: Prepare for C++ Metal interop
+
+- [ ] Design expect/actual Metal boundary
+- [ ] Implement CPU fallback
+- [ ] Create Metal tensor class
+- [ ] Add matmul via Metal
+- [ ] Platform-specific implementations
+
+## 📅 Timeline (Aggressive)
+
+**Week 1**: Milestones A, B (CFloat16/64, Scalars)  
+**Week 2**: Milestones C, D (DTypes, Storage)  
+**Week 3-4**: Milestone E (Basic Tensors)  
+**Week 4-5**: Milestone F (Math Ops)  
+**Week 5**: Milestone G (Ember API)  
+**Week 6-7**: Milestone H (Broadcasting)  
+**Week 7-8**: Milestone I (SWAR)  
+**Week 9+**: Milestone J (Metal)
+
+## 🎯 Success Criteria
+
+### Phase 1 (Weeks 1-2): Scalars & Types
+- ✅ CFloat16/32/64 all working
+- ✅ Scalar wrappers functional
+- ✅ Cross-platform bit-exact results
+- ✅ DType hierarchy complete
+
+### Phase 2 (Weeks 3-5): Basic Tensors
+- ✅ `Ember.array()` works for scalars, vectors, matrices
+- ✅ Element-wise operations using KLang
+- ✅ Shape operations work
+- ✅ Math functions (sin, cos, exp) functional
+
+### Phase 3 (Weeks 5-7): API Complete
+- ✅ MLX-style API feels natural
+- ✅ Broadcasting implemented
+- ✅ Reduction operations work
+- ✅ Matrix multiplication functional
+
+### Phase 4 (Weeks 7-9): Performance
+- ✅ SWAR integration for speedups
+- ✅ Quantization support
+- ✅ Benchmarks show 2-4x improvements
+
+## 🔥 Immediate Next Actions
+
+1. **Implement CFloat16** (1-2 days)
+   - Port from compiler-rt or adapt from CFloat32
+   - Add to klang/fp/ directory
+   - Write tests
+
+2. **Implement CFloat64** (2-3 days)
+   - Use HPC16x8 for 128-bit intermediates
+   - Port Float64Math operations
+   - Write tests
+
+3. **Create Scalar wrappers** (1 day)
+   - Wrap CFloat16/32/64 in Scalar sealed class
+   - Add arithmetic operators
+   - Write tests
+
+4. **Start EmberDType** (1 day)
+   - Create sealed class hierarchy
+   - Define all dtype objects
+   - Add type properties
+
+5. **Prototype Ember.array()** (2-3 days)
+   - Get scalars working
+   - Get simple vectors working
+   - Test with KLang arithmetic
+
+**Then build the full API iteratively!** 🚀
+
+---
+
+## 📦 Repository Status
+
+**KLang Integration**: ✅ COMPLETE  
+- 23 source files + 16 test files
+- CFloat32 with Float32Math (29KB)
+- HPC limb engine
+- SwAR operations
+- All platforms build successfully
+
+**New Ember API**: 🔄 DESIGN COMPLETE, IMPLEMENTATION STARTING
+
+**Documentation**: ✅ UP TO DATE  
+- `EMBER_KOTLIN_ARCHITECTURE.md` - Full design
+- `KLANG_SWAR_INTEGRATION_PLAN.md` - KLang integration plan
+- This checklist - Current status
+
+---
+
+**Remember**: KLang + Ember = Pure Kotlin ML dominance! 🔥
