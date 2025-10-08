@@ -1,0 +1,5 @@
+add_executable(kcoro_cpp_channel_buffer_stress main.cpp)
+target_include_directories(kcoro_cpp_channel_buffer_stress PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_channel_buffer_stress PRIVATE kcoro_cpp pthread)
+target_compile_options(kcoro_cpp_channel_buffer_stress PRIVATE -g -O0)
+install(TARGETS kcoro_cpp_channel_buffer_stress RUNTIME DESTINATION bin)

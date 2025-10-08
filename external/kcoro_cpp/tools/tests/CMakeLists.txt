@@ -1,0 +1,26 @@
+cmake_minimum_required(VERSION 3.18)
+project(kcoro_cpp_tests C CXX)
+add_executable(kcoro_cpp_select_harness select_harness.cpp)
+target_include_directories(kcoro_cpp_select_harness PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_select_harness PRIVATE kcoro_cpp pthread)
+install(TARGETS kcoro_cpp_select_harness RUNTIME DESTINATION bin)
+
+add_executable(kcoro_cpp_zref_region_harness zref_region_harness.cpp)
+target_include_directories(kcoro_cpp_zref_region_harness PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_zref_region_harness PRIVATE kcoro_cpp pthread)
+install(TARGETS kcoro_cpp_zref_region_harness RUNTIME DESTINATION bin)
+
+add_executable(kcoro_cpp_region_meta_policy test_region_meta_format_policy.cpp)
+target_include_directories(kcoro_cpp_region_meta_policy PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_region_meta_policy PRIVATE kcoro_cpp pthread)
+install(TARGETS kcoro_cpp_region_meta_policy RUNTIME DESTINATION bin)
+
+add_executable(kcoro_cpp_chan_types test_chan_types.cpp)
+target_include_directories(kcoro_cpp_chan_types PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_chan_types PRIVATE kcoro_cpp pthread)
+install(TARGETS kcoro_cpp_chan_types RUNTIME DESTINATION bin)
+
+add_executable(kcoro_cpp_channel_stress test_channel_stress.cpp)
+target_include_directories(kcoro_cpp_channel_stress PRIVATE ${CMAKE_CURRENT_LIST_DIR}/../../include)
+target_link_libraries(kcoro_cpp_channel_stress PRIVATE kcoro_cpp pthread)
+install(TARGETS kcoro_cpp_channel_stress RUNTIME DESTINATION bin)

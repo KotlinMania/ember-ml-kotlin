@@ -1,0 +1,2 @@
+package = ai.solace.kcoro
+headers = kcoro.h kcoro_sched.h

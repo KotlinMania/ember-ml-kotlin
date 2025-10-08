@@ -1,0 +1,21 @@
+{
+  "comment": "High-performance configuration with spin optimization",
+  "chans": 1,
+  "producers": 8,
+  "consumers": 4,
+  "msgs": 0,
+  "elem": 64,
+  "capacity": 8192,
+  "duration_sec": 30,
+  "nonblock": false,
+  "spin_optimization": {
+    "enabled": true,
+    "spin_iters": 2048,
+    "description": "Busy-wait before blocking to reduce context switches"
+  },
+  "performance_target": {
+    "target_mpps": 10.0,
+    "target_gbps": 5.0,
+    "max_cpu_percent": 80.0
+  }
+}

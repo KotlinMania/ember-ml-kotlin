@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     bench_chan_metrics
+relocations:     []
+...

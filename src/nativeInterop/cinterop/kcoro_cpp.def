@@ -1,0 +1,3 @@
+language = C
+package = ai.solace.kcoro.cpp
+headers = kcoro_cpp_bridge_c.h

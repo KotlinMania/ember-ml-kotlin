@@ -1,0 +1,19 @@
+# Minimal Doxygen configuration for kcoro
+PROJECT_NAME           = "kcoro"
+OUTPUT_DIRECTORY       = build
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+RECURSIVE              = YES
+INPUT                  = ../include ../core/src ../README.md ../PLAN.md ../JOURNAL.md
+FILE_PATTERNS          = *.h *.c *.md
+QUIET                  = YES
+JAVADOC_AUTOBRIEF      = YES
+MACRO_EXPANSION        = YES
+ENABLE_PREPROCESSING   = YES
+EXPAND_ONLY_PREDEF     = NO
+TAB_SIZE               = 4
+OPTIMIZE_OUTPUT_FOR_C  = YES
+GENERATE_TREEVIEW      = YES
+USE_MDFILE_AS_MAINPAGE = ../README.md
