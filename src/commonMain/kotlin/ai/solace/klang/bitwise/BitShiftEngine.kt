@@ -11,6 +11,7 @@ package ai.solace.klang.bitwise
  * The engine also handles carry operations properly and provides access to overflow/carry bits.
  */
 enum class BitShiftMode {
+    AUTO, // Resolve at runtime (validate native shifts before enabling)
     NATIVE, // Use Kotlin's built-in shl, shr, ushr operations
     ARITHMETIC, // Use pure arithmetic operations for cross-platform consistency
 }
@@ -53,7 +54,13 @@ class BitShiftEngine(
             return ShiftResult(0L, 0L, true)
         }
 
-        return when (mode) {
+        val activeMode = if (mode == BitShiftMode.AUTO) {
+            BitShiftConfig.resolveMode(bitWidth)
+        } else {
+            mode
+        }
+
+        return when (activeMode) {
             BitShiftMode.NATIVE -> {
                 val originalValue = normalize(value)
                 val shiftedValue =
@@ -94,6 +101,8 @@ class BitShiftEngine(
 
                 ShiftResult(result, carry, overflow)
             }
+
+            BitShiftMode.AUTO -> error("BitShiftMode.AUTO must resolve before execution")
         }
     }
 
@@ -108,7 +117,13 @@ class BitShiftEngine(
             return ShiftResult(if (value < 0) -1L else 0L, 0L, false)
         }
 
-        return when (mode) {
+        val activeMode = if (mode == BitShiftMode.AUTO) {
+            BitShiftConfig.resolveMode(bitWidth)
+        } else {
+            mode
+        }
+
+        return when (activeMode) {
             BitShiftMode.NATIVE -> {
                 val originalValue = normalize(value)
                 val result =
@@ -131,6 +146,8 @@ class BitShiftEngine(
                 val result = arithmeticOps.rightShift(normalize(value), bits)
                 ShiftResult(result, 0L, false)
             }
+
+            BitShiftMode.AUTO -> error("BitShiftMode.AUTO must resolve before execution")
         }
     }
 
@@ -145,7 +162,13 @@ class BitShiftEngine(
             return ShiftResult(0L, 0L, false)
         }
 
-        return when (mode) {
+        val activeMode = if (mode == BitShiftMode.AUTO) {
+            BitShiftConfig.resolveMode(bitWidth)
+        } else {
+            mode
+        }
+
+        return when (activeMode) {
             BitShiftMode.NATIVE -> {
                 val originalValue = normalize(value)
                 val result =
@@ -168,6 +191,8 @@ class BitShiftEngine(
                 val result = arithmeticOps.rightShift(normalize(value), bits)
                 ShiftResult(result, 0L, false)
             }
+
+            BitShiftMode.AUTO -> error("BitShiftMode.AUTO must resolve before execution")
         }
     }
 

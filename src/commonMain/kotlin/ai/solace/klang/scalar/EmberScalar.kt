@@ -1,6 +1,8 @@
 package ai.solace.klang.scalar
 
 import ai.solace.klang.bitwise.ArithmeticBitwiseOps
+import ai.solace.klang.bitwise.BitShiftConfig
+import ai.solace.klang.bitwise.BitShiftMode
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.max
@@ -565,6 +567,7 @@ class EmberScalar constructor(
                 table[i] = POW2[i] - 1
             }
         }
+        private val nativePreferred by lazy { BitShiftConfig.resolveMode(LIMB_BITS) == BitShiftMode.NATIVE }
 
         fun alignLength(length: Int): Int {
             if (length <= 0) return 0
@@ -575,6 +578,9 @@ class EmberScalar constructor(
         fun shiftLeft(data: IntArray, bitShift: Int, carryIn: Int = 0): Int {
             require(bitShift in 0 until LIMB_BITS) { "bitShift must be in 0 until $LIMB_BITS" }
             if (bitShift == 0 || data.isEmpty()) return normalize(carryIn)
+            if (nativePreferred) {
+                return shiftLeftNative(data, bitShift, carryIn)
+            }
             require(data.size % GROUP_SIZE == 0) { "Data length must be a multiple of $GROUP_SIZE" }
 
             val pow2 = POW2[bitShift]
@@ -591,6 +597,9 @@ class EmberScalar constructor(
         fun shiftRight(data: IntArray, bitShift: Int): Int {
             require(bitShift in 0 until LIMB_BITS) { "bitShift must be in 0 until $LIMB_BITS" }
             if (bitShift == 0 || data.isEmpty()) return 0
+            if (nativePreferred) {
+                return shiftRightNative(data, bitShift)
+            }
             require(data.size % GROUP_SIZE == 0) { "Data length must be a multiple of $GROUP_SIZE" }
 
             val divisor = POW2[bitShift]
@@ -661,6 +670,39 @@ class EmberScalar constructor(
             var remainder = value % BASE_LONG
             if (remainder < 0) remainder += BASE_LONG
             return remainder.toInt()
+        }
+
+        private fun shiftLeftNative(data: IntArray, bitShift: Int, carryIn: Int): Int {
+            val carryMask = LOW_MASK[bitShift]
+            var carry = if (carryMask == 0) 0 else normalize(carryIn) % (carryMask + 1)
+            for (index in 0 until data.size) {
+                val current = normalize(data[index])
+                val combined = (current shl bitShift) + carry
+                data[index] = normalize(combined)
+                carry = combined ushr LIMB_BITS
+            }
+            return normalize(carry)
+        }
+
+        private fun shiftRightNative(data: IntArray, bitShift: Int): Int {
+            val carryMask = LOW_MASK[bitShift]
+            val mergeShift = LIMB_BITS - bitShift
+            var incoming = 0
+            var idx = data.lastIndex
+            while (idx >= 0) {
+                val current = normalize(data[idx])
+                val upper =
+                    if (bitShift == 0) {
+                        0
+                    } else {
+                        (incoming and carryMask) shl mergeShift
+                    }
+                val shifted = (current ushr bitShift) or upper
+                data[idx] = normalize(shifted)
+                incoming = current and carryMask
+                idx--
+            }
+            return normalize(incoming)
         }
     }
 

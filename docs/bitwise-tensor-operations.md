@@ -4,6 +4,16 @@
 
 This implementation adds comprehensive bitwise tensor operations to the Ember ML Kotlin library, completing the tensor implementation that was identified as missing in issue #9.
 
+### Hybrid Shift Engine (Native + SWAR)
+
+The limb shifter now auto-selects between Kotlin’s native bitwise operators and the arithmetic SWAR engine at runtime:
+
+- On startup a lightweight self-test compares native `shl/ushr` results against the arithmetic reference for 8-, 16-, 32-, and 64-bit lanes. Only if every combination matches do we enable native mode.
+- EmberScalar and the shift workspaces route through this hybrid front end. Scalar-only moves get the native fast path; multi-limb math keeps the deterministic SWAR implementation for SIMD-friendly carry handling.
+- If a platform diverges, the detector falls back to the arithmetic engine automatically, so behaviour stays portable without manual toggles.
+
+This “AUTO” mode gives us the best of both worlds: native speed when the host matches our C helpers, and guaranteed correctness elsewhere.
+
 ## Architecture
 
 The implementation leverages the existing MegaNumber/MegaBinary system to provide bitwise operations at the tensor level:
