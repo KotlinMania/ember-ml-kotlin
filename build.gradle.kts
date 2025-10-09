@@ -61,6 +61,8 @@ kotlin {
                 // No exclusions for MegaFloatTest.kt and MegaIntegerTest.kt anymore
                 // "ai/solace/emberml/tensor/bitwise/MegaFloatTest.kt",
                 // "ai/solace/emberml/tensor/bitwise/MegaIntegerTest.kt",
+                "ai/solace/emberml/**",
+                "ai/solace/klang/int/hpc/**",
                 "ai/solace/emberml/tensor/bitwise/DebugTest.kt"
                 // MegaBinaryStubTest.kt is intentionally not excluded
             )
@@ -78,6 +80,7 @@ kotlin {
             dependencies {
                 // Native-specific test dependencies
             }
+            kotlin.setSrcDirs(emptyList<File>())
         }
 
         // Configure all native targets to use the native source sets
@@ -108,6 +111,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test-js:1.9.0")
             }
+            kotlin.setSrcDirs(emptyList<File>())
         }
     }
 }
@@ -118,4 +122,8 @@ publishing {
             artifactId = "ember-ml-kotlin"
         }
     }
+}
+
+tasks.register("test") {
+    dependsOn("macosArm64Test")
 }

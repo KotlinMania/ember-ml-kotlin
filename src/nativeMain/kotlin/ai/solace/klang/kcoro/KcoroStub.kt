@@ -7,7 +7,10 @@ import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointed
 
-/** Lightweight stub to keep kcoro-dependent code compiling when the native library is unavailable. */
+/**
+ * Stub implementation used when kcoro native runtime is not linked. All calls report
+ * unavailability so higher level code can fall back cleanly.
+ */
 class KcoroScheduler
 class KcoroChannel
 class KcoroHandle
