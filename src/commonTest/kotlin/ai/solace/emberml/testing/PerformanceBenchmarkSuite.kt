@@ -5,10 +5,10 @@
  * This provides the infrastructure for performance testing as specified
  * in the testing strategy.
  */
-package ai.solace.emberml.testing
+package ai.solace.ember.testing
 
-import ai.solace.emberml.tensor.bitwise.MegaBinary
-import ai.solace.emberml.tensor.bitwise.InterferenceMode
+import ai.solace.ember.tensor.bitwise.MegaBinary
+import ai.solace.ember.tensor.bitwise.InterferenceMode
 import kotlin.test.*
 
 /**

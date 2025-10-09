@@ -1,6 +1,6 @@
 package ai.solace.ember.scalar
 
-import ai.solace.ember.dtype.EmberDType
+import ai.solace.ember.dtype.DType
 import ai.solace.klang.bitwise.CFloat32
 import ai.solace.klang.fp.CFloat16
 import ai.solace.klang.fp.CFloat64
@@ -13,21 +13,21 @@ class ScalarTest {
     @Test
     fun testFloat16Creation() {
         val s = Scalar.Float16(CFloat16.fromFloat(5.0f))
-        assertEquals(EmberDType.Float16, s.dtype)
+        assertEquals(DType.Float16, s.dtype)
         assertEquals(5.0f, s.toFloat(), 0.01f)
     }
     
     @Test
     fun testFloat32Creation() {
         val s = Scalar.Float32(CFloat32.fromFloat(5.0f))
-        assertEquals(EmberDType.Float32, s.dtype)
+        assertEquals(DType.Float32, s.dtype)
         assertEquals(5.0f, s.toFloat(), 0.0001f)
     }
     
     @Test
     fun testFloat64Creation() {
         val s = Scalar.Float64(CFloat64.fromDouble(5.0))
-        assertEquals(EmberDType.Float64, s.dtype)
+        assertEquals(DType.Float64, s.dtype)
         assertEquals(5.0, s.toDouble(), 0.0001)
     }
     
@@ -82,11 +82,11 @@ class ScalarTest {
     
     @Test
     fun testFromValue() {
-        val f32 = Scalar.fromValue(5.5, EmberDType.Float32)
+        val f32 = Scalar.fromValue(5.5, DType.Float32)
         assertTrue(f32 is Scalar.Float32)
         assertEquals(5.5f, f32.toFloat(), 0.0001f)
         
-        val i32 = Scalar.fromValue(42, EmberDType.Int32)
+        val i32 = Scalar.fromValue(42, DType.Int32)
         assertTrue(i32 is Scalar.Int32)
         assertEquals(42, i32.toInt())
     }

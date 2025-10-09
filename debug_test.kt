@@ -1,5 +1,5 @@
 // Simple debug test to understand the current behavior
-package ai.solace.emberml.tensor.bitwise
+package ai.solace.ember.tensor.bitwise
 
 fun debugMain() {
     println("=== Debug MegaFloat ===")

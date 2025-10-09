@@ -1,6 +1,6 @@
 package ai.solace.ember.scalar
 
-import ai.solace.ember.dtype.EmberDType
+import ai.solace.ember.dtype.DType
 import ai.solace.klang.bitwise.CFloat32
 import ai.solace.klang.fp.CFloat16
 import ai.solace.klang.fp.CFloat64
@@ -11,7 +11,7 @@ import ai.solace.klang.fp.CFloat64
  * This is the foundation for 0-dimensional tensors in Ember.
  */
 sealed class Scalar {
-    abstract val dtype: EmberDType
+    abstract val dtype: DType
     abstract fun toDouble(): Double
     abstract fun toFloat(): Float
     abstract fun toInt(): Int
@@ -22,7 +22,7 @@ sealed class Scalar {
     // ============================================
     
     data class Float16(val value: CFloat16) : Scalar() {
-        override val dtype = EmberDType.Float16
+        override val dtype = DType.Float16
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toFloat().toInt()
@@ -42,7 +42,7 @@ sealed class Scalar {
     // ============================================
     
     data class Float32(val value: CFloat32) : Scalar() {
-        override val dtype = EmberDType.Float32
+        override val dtype = DType.Float32
         override fun toDouble() = value.value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toFloat().toInt()
@@ -62,7 +62,7 @@ sealed class Scalar {
     // ============================================
     
     data class Float64(val value: CFloat64) : Scalar() {
-        override val dtype = EmberDType.Float64
+        override val dtype = DType.Float64
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toDouble().toInt()
@@ -82,7 +82,7 @@ sealed class Scalar {
     // ============================================
     
     data class Int8(val value: Byte) : Scalar() {
-        override val dtype = EmberDType.Int8
+        override val dtype = DType.Int8
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toInt()
@@ -98,7 +98,7 @@ sealed class Scalar {
     }
     
     data class Int32(val value: Int) : Scalar() {
-        override val dtype = EmberDType.Int32
+        override val dtype = DType.Int32
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value
@@ -114,7 +114,7 @@ sealed class Scalar {
     }
     
     data class Int64(val value: Long) : Scalar() {
-        override val dtype = EmberDType.Int64
+        override val dtype = DType.Int64
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toInt()
@@ -134,7 +134,7 @@ sealed class Scalar {
     // ============================================
     
     data class Bool(val value: Boolean) : Scalar() {
-        override val dtype = EmberDType.Bool
+        override val dtype = DType.Bool
         override fun toDouble() = if (value) 1.0 else 0.0
         override fun toFloat() = if (value) 1.0f else 0.0f
         override fun toInt() = if (value) 1 else 0
@@ -152,13 +152,13 @@ sealed class Scalar {
         /**
          * Create scalar from value and dtype.
          */
-        fun fromValue(value: Number, dtype: EmberDType): Scalar = when (dtype) {
-            EmberDType.Float16 -> Float16(CFloat16.fromFloat(value.toFloat()))
-            EmberDType.Float32 -> Float32(CFloat32.fromFloat(value.toFloat()))
-            EmberDType.Float64 -> Float64(CFloat64.fromDouble(value.toDouble()))
-            EmberDType.Int8 -> Int8(value.toByte())
-            EmberDType.Int32 -> Int32(value.toInt())
-            EmberDType.Int64 -> Int64(value.toLong())
+        fun fromValue(value: Number, dtype: DType): Scalar = when (dtype) {
+            DType.Float16 -> Float16(CFloat16.fromFloat(value.toFloat()))
+            DType.Float32 -> Float32(CFloat32.fromFloat(value.toFloat()))
+            DType.Float64 -> Float64(CFloat64.fromDouble(value.toDouble()))
+            DType.Int8 -> Int8(value.toByte())
+            DType.Int32 -> Int32(value.toInt())
+            DType.Int64 -> Int64(value.toLong())
             else -> throw IllegalArgumentException("Unsupported dtype for scalar: $dtype")
         }
         

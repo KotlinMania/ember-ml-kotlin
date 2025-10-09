@@ -1,6 +1,6 @@
 package ai.solace.ember
 
-import ai.solace.ember.dtype.EmberDType
+import ai.solace.ember.dtype.DType
 import ai.solace.ember.scalar.Scalar
 import ai.solace.klang.bitwise.CFloat32
 import ai.solace.klang.fp.CFloat16
@@ -65,26 +65,26 @@ object EmberDemo {
         println()
         
         println("Floating Point Types:")
-        println("  ${EmberDType.Float16.name} - ${EmberDType.Float16.byteSize} bytes")
-        println("  ${EmberDType.Float32.name} - ${EmberDType.Float32.byteSize} bytes")
-        println("  ${EmberDType.Float64.name} - ${EmberDType.Float64.byteSize} bytes")
+        println("  ${DType.Float16.name} - ${DType.Float16.byteSize} bytes")
+        println("  ${DType.Float32.name} - ${DType.Float32.byteSize} bytes")
+        println("  ${DType.Float64.name} - ${DType.Float64.byteSize} bytes")
         println()
         
         println("Integer Types:")
-        println("  ${EmberDType.Int8.name} - ${EmberDType.Int8.byteSize} byte")
-        println("  ${EmberDType.Int32.name} - ${EmberDType.Int32.byteSize} bytes")
-        println("  ${EmberDType.Int64.name} - ${EmberDType.Int64.byteSize} bytes")
+        println("  ${DType.Int8.name} - ${DType.Int8.byteSize} byte")
+        println("  ${DType.Int32.name} - ${DType.Int32.byteSize} bytes")
+        println("  ${DType.Int64.name} - ${DType.Int64.byteSize} bytes")
         println()
         
         println("Quantized Types (from llama.kotlin):")
-        println("  ${EmberDType.Q4_0.name} - ${EmberDType.Q4_0.byteSize} bytes (4-bit block)")
-        println("  ${EmberDType.Q8_0.name} - ${EmberDType.Q8_0.byteSize} bytes (8-bit block)")
+        println("  ${DType.Q4_0.name} - ${DType.Q4_0.byteSize} bytes (4-bit block)")
+        println("  ${DType.Q8_0.name} - ${DType.Q8_0.byteSize} bytes (8-bit block)")
         println()
         
         println("Type Properties:")
-        println("  Float32 is floating point? ${EmberDType.Float32.isFloatingPoint}")
-        println("  Int32 is integer? ${EmberDType.Int32.isInteger}")
-        println("  Q4_0 is quantized? ${EmberDType.Q4_0.isQuantized}")
+        println("  Float32 is floating point? ${DType.Float32.isFloatingPoint}")
+        println("  Int32 is integer? ${DType.Int32.isInteger}")
+        println("  Q4_0 is quantized? ${DType.Q4_0.isQuantized}")
         println()
     }
     
@@ -94,7 +94,7 @@ object EmberDemo {
         
         val dtypes = listOf("float32", "f16", "int", "q8_0", "double")
         dtypes.forEach { name ->
-            val dtype = EmberDType.fromString(name)
+            val dtype = DType.fromString(name)
             println("  '$name' -> $dtype")
         }
         println()

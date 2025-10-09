@@ -4,10 +4,10 @@
  * This test suite verifies that the Kotlin implementation produces
  * results consistent with the Python reference implementation.
  */
-package ai.solace.emberml.testing
+package ai.solace.ember.testing
 
-import ai.solace.emberml.tensor.bitwise.MegaBinary
-import ai.solace.emberml.tensor.bitwise.InterferenceMode
+import ai.solace.ember.tensor.bitwise.MegaBinary
+import ai.solace.ember.tensor.bitwise.InterferenceMode
 import kotlin.test.*
 
 /**

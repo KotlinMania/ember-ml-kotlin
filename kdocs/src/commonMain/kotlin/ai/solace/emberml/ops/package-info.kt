@@ -1,7 +1,7 @@
 /**
  * # Operations (ops) Module
  *
- * The `ai.solace.emberml.ops` module provides the primary, backend-agnostic interface for fundamental operations
+ * The `ai.solace.ember.ops` module provides the primary, backend-agnostic interface for fundamental operations
  * in Ember ML Kotlin. Through a dynamic dispatch system, it exposes functions implemented by the currently active
  * backend, ensuring a consistent API regardless of the underlying computation library.
  *
@@ -17,7 +17,7 @@
  * ## Core Mathematical Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.math.*
+ * import ai.solace.ember.ops.math.*
  *
  * // Element-wise addition of tensors
  * val result = add(x, y)
@@ -80,7 +80,7 @@
  * ## Trigonometric Functions
  *
  * ```kotlin
- * import ai.solace.emberml.ops.math.*
+ * import ai.solace.ember.ops.math.*
  *
  * // Element-wise sine of tensor
  * val result = sin(x)
@@ -104,7 +104,7 @@
  * ## Comparison Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.comparison.*
+ * import ai.solace.ember.ops.comparison.*
  *
  * // Element-wise equality comparison
  * val result = equal(x, y)
@@ -158,7 +158,7 @@
  * ## Device Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.device.*
+ * import ai.solace.ember.ops.device.*
  *
  * // Move tensor to the specified device
  * val result = toDevice(x, device)
@@ -191,7 +191,7 @@
  * ## I/O Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.io.*
+ * import ai.solace.ember.ops.io.*
  *
  * // Save object to file (backend-specific serialization)
  * save(obj, path)
@@ -203,7 +203,7 @@
  * ## Loss Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.loss.*
+ * import ai.solace.ember.ops.loss.*
  *
  * // Mean squared error loss
  * val loss = mse(yTrue, yPred)
@@ -230,8 +230,8 @@
  * ## Vector & FFT Operations
  *
  * ```kotlin
- * import ai.solace.emberml.ops.vector.*
- * import ai.solace.emberml.ops.fft.*
+ * import ai.solace.ember.ops.vector.*
+ * import ai.solace.ember.ops.fft.*
  *
  * // Normalize a vector or matrix
  * val result = normalizeVector(x, axis)
@@ -273,7 +273,7 @@
  * ## Backend Management
  *
  * ```kotlin
- * import ai.solace.emberml.backend.*
+ * import ai.solace.ember.backend.*
  *
  * // Get the name of the current active backend
  * val backend = getBackend()
@@ -290,10 +290,10 @@
  * - All operations are backend-agnostic and work with any backend set via `setBackend`.
  * - The operations follow a consistent API across different backends.
  * - Most operations support broadcasting, similar to NumPy and other array libraries.
- * - For tensor creation and manipulation, use the `ai.solace.emberml.tensor` module.
- * - For statistical operations (e.g., mean, std, var), use the `ai.solace.emberml.ops.stats` module.
- * - For linear algebra operations (e.g., svd, inv, det), use the `ai.solace.emberml.ops.linearalg` module.
- * - For activation functions, use the `ai.solace.emberml.nn.activations` module.
- * - For feature extraction operations/factories, use the `ai.solace.emberml.nn.features` module.
+ * - For tensor creation and manipulation, use the `ai.solace.ember.tensor` module.
+ * - For statistical operations (e.g., mean, std, var), use the `ai.solace.ember.ops.stats` module.
+ * - For linear algebra operations (e.g., svd, inv, det), use the `ai.solace.ember.ops.linearalg` module.
+ * - For activation functions, use the `ai.solace.ember.nn.activations` module.
+ * - For feature extraction operations/factories, use the `ai.solace.ember.nn.features` module.
  */
-package ai.solace.emberml.ops
+package ai.solace.ember.ops

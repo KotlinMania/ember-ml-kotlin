@@ -4,10 +4,10 @@
  * This test suite covers tensor operations integration between different components
  * following the testing strategy requirements.
  */
-package ai.solace.emberml.testing
+package ai.solace.ember.testing
 
-import ai.solace.emberml.tensor.bitwise.MegaBinary
-import ai.solace.emberml.tensor.bitwise.MegaNumber
+import ai.solace.ember.tensor.bitwise.MegaBinary
+import ai.solace.ember.tensor.bitwise.MegaNumber
 import kotlin.test.*
 
 /**
@@ -114,7 +114,7 @@ class TensorOperationsIntegrationTestSuite {
     fun testErrorHandling() {
         // Test null/empty cases
         assertFailsWith<IllegalArgumentException> {
-            MegaBinary.interfere(emptyList(), ai.solace.emberml.tensor.bitwise.InterferenceMode.XOR)
+            MegaBinary.interfere(emptyList(), ai.solace.ember.tensor.bitwise.InterferenceMode.XOR)
         }
         
         // Test invalid operations gracefully

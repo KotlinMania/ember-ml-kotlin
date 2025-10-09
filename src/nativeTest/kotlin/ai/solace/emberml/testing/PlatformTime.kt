@@ -1,4 +1,4 @@
-package ai.solace.emberml.testing
+package ai.solace.ember.testing
 
 import kotlin.time.TimeSource
 

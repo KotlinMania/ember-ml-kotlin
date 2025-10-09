@@ -6,7 +6,7 @@
  *
  * ## Core Modules
  *
- * - **`ai.solace.emberml.tensor`**: Core tensor implementation and operations
+ * - **`ai.solace.ember.tensor`**: Core tensor implementation and operations
  *   - `common`: Common tensor classes and utilities
  *   - `interfaces`: Tensor interfaces
  *   - `ops`: Tensor operations
@@ -17,19 +17,19 @@
  *     - `random`: Random number generation
  *     - `utility`: Utility operations
  *
- * - **`ai.solace.emberml.ops`**: Core operations for tensor manipulation
+ * - **`ai.solace.ember.ops`**: Core operations for tensor manipulation
  *   - `math`: Mathematical operations
  *   - `linearalg`: Linear algebra operations
  *   - `stats`: Statistical operations
  *   - `bitwise`: Bitwise operations
  *
- * - **`ai.solace.emberml.backend`**: Backend abstraction system
+ * - **`ai.solace.ember.backend`**: Backend abstraction system
  *   - `common`: Common backend interfaces and utilities
  *   - `native`: Native-specific backend implementations
  *
  * ## Neural Network Components
  *
- * - **`ai.solace.emberml.nn`**: Neural network components
+ * - **`ai.solace.ember.nn`**: Neural network components
  *   - `activations`: Activation functions
  *   - `containers`: Container modules
  *   - `features`: Feature extraction and processing
@@ -40,12 +40,12 @@
  *
  * ## Utility Modules
  *
- * - **`ai.solace.emberml.utils`**: Utility functions
+ * - **`ai.solace.ember.utils`**: Utility functions
  *   - `math`: Mathematical utilities
  *   - `metrics`: Evaluation metrics
  *   - `visualization`: Plotting tools
  *
- * - **`ai.solace.emberml.training`**: Training utilities
+ * - **`ai.solace.ember.training`**: Training utilities
  *   - `optimizers`: Optimization algorithms
  *   - `schedulers`: Learning rate schedulers
  *   - `callbacks`: Training callbacks
@@ -59,7 +59,7 @@
  *
  * ```kotlin
  * // As a standalone function
- * import ai.solace.emberml.tensor.ops.casting.cast
+ * import ai.solace.ember.tensor.ops.casting.cast
  * val result = cast(tensor, dtype)
  *
  * // As a method on EmberTensor

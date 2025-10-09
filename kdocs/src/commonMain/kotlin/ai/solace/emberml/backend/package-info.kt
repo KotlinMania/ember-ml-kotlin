@@ -1,7 +1,7 @@
 /**
  * # Backend Module
  *
- * The `ai.solace.emberml.backend` module provides the backend abstraction system for Ember ML Kotlin.
+ * The `ai.solace.ember.backend` module provides the backend abstraction system for Ember ML Kotlin.
  * It allows the library to work with different computation backends (JVM, JS, Native) while providing
  * a consistent API to the user.
  *
@@ -20,7 +20,7 @@
  * Ember ML Kotlin supports multiple backends, and users can select the backend to use at runtime:
  *
  * ```kotlin
- * import ai.solace.emberml.backend.*
+ * import ai.solace.ember.backend.*
  *
  * // Get the current backend
  * val backend = getBackend()
@@ -49,9 +49,9 @@
  * ```kotlin
  * interface Backend {
  *     // Tensor operations
- *     fun createTensor(data: Any, shape: IntArray, dtype: EmberDType): Any
+ *     fun createTensor(data: Any, shape: IntArray, dtype: DType): Any
  *     fun getTensorShape(tensor: Any): IntArray
- *     fun getTensorDType(tensor: Any): EmberDType
+ *     fun getTensorDType(tensor: Any): DType
  *     fun getTensorDevice(tensor: Any): String
  *
  *     // Mathematical operations
@@ -136,4 +136,4 @@
  * }
  * ```
  */
-package ai.solace.emberml.backend
+package ai.solace.ember.backend
