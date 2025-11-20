@@ -2,9 +2,9 @@ package ai.solace.ember
 
 import ai.solace.ember.dtype.DType
 import ai.solace.ember.scalar.Scalar
-import ai.solace.klang.bitwise.CFloat32
 import ai.solace.klang.fp.CFloat16
-import ai.solace.klang.fp.CFloat64
+import ai.solace.klang.fp.CFloat32
+import ai.solace.klang.fp.CDouble
 
 /**
  * Demo of Ember's new type system.
@@ -37,8 +37,8 @@ object EmberDemo {
         
         // Float64 scalars
         println("Float64 Operations:")
-        val f64_a = Scalar.Float64(CFloat64.fromDouble(5.0))
-        val f64_b = Scalar.Float64(CFloat64.fromDouble(3.0))
+        val f64_a = Scalar.Float64(CDouble.fromDouble(5.0))
+        val f64_b = Scalar.Float64(CDouble.fromDouble(3.0))
         println("  5.0 / 3.0 = ${(f64_a / f64_b).toDouble()}")
         println()
         

@@ -1,9 +1,9 @@
 package ai.solace.ember.scalar
 
 import ai.solace.ember.dtype.DType
-import ai.solace.klang.bitwise.CFloat32
+import ai.solace.klang.fp.CDouble
 import ai.solace.klang.fp.CFloat16
-import ai.solace.klang.fp.CFloat64
+import ai.solace.klang.fp.CFloat32
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -26,7 +26,7 @@ class ScalarTest {
     
     @Test
     fun testFloat64Creation() {
-        val s = Scalar.Float64(CFloat64.fromDouble(5.0))
+        val s = Scalar.Float64(CDouble.fromDouble(5.0))
         assertEquals(DType.Float64, s.dtype)
         assertEquals(5.0, s.toDouble(), 0.0001)
     }

@@ -1,10 +1,10 @@
 package ai.solace.ember.scalar
 
 import ai.solace.ember.dtype.DType
-import ai.solace.klang.bitwise.CFloat32
-import ai.solace.ember.backend.klang.LimbEngineActor
+import ai.solace.klang.fp.CDouble
 import ai.solace.klang.fp.CFloat16
-import ai.solace.klang.fp.CFloat64
+import ai.solace.klang.fp.CFloat32
+import ai.solace.ember.backend.klang.LimbEngineActor
 
 /**
  * Scalar value wrapper using KLang for bit-exact arithmetic.
@@ -62,13 +62,13 @@ sealed class Scalar {
     // Float64 scalar (64-bit double precision)
     // ============================================
     
-    data class Float64(val value: CFloat64) : Scalar() {
+    data class Float64(val value: CDouble) : Scalar() {
         override val dtype = DType.Float64
         override fun toDouble() = value.toDouble()
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toDouble().toInt()
         override fun toLong() = value.toDouble().toLong()
-        
+
         operator fun plus(other: Float64) = Float64(value + other.value)
         operator fun minus(other: Float64) = Float64(value - other.value)
         operator fun times(other: Float64) = Float64(value * other.value)
@@ -195,7 +195,7 @@ sealed class Scalar {
         fun fromValue(value: Number, dtype: DType): Scalar = when (dtype) {
             DType.Float16 -> Float16(CFloat16.fromFloat(value.toFloat()))
             DType.Float32 -> Float32(CFloat32.fromFloat(value.toFloat()))
-            DType.Float64 -> Float64(CFloat64.fromDouble(value.toDouble()))
+            DType.Float64 -> Float64(CDouble.fromDouble(value.toDouble()))
             DType.Float128 -> Float128(BigScalar.fromDecimalString(value.toString()))
             DType.Int8 -> Int8(value.toByte())
             DType.Int32 -> Int32(value.toInt())

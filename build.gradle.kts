@@ -1,7 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
-import java.io.File
-import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
-
 plugins {
     kotlin("multiplatform") version "2.2.20"
     kotlin("plugin.serialization") version "2.2.20"
@@ -48,6 +44,9 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:atomicfu:0.23.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+                implementation("ai.solace:klang") {
+                    version { branch = "main" }
+                }
             }
             kotlin.srcDir("src/commonMain/kotlin")
             resources.srcDir("src/commonMain/resources")
