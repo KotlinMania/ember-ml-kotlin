@@ -1,12 +1,12 @@
 # KLangNative
 
-**Native-first, C-layout systems programming library in pure Kotlin** — optimized for deterministic, bit-exact low-level primitives on Kotlin/Native (and JVM). JavaScript parity is out-of-scope until a native addon exists.
+**Native-first, C-layout systems programming library in pure Kotlin** — optimized for deterministic, bit-exact low‑level primitives on Kotlin/Native (and JVM). JavaScript parity is out-of-scope until a Node/WASM addon exists.
 
 ## What is KLangNative?
 
 KLangNative is **not** a cinterop wrapper or FFI layer. It's a **pure Kotlin implementation** that precisely replicates C's bitwise operations, memory model, and numeric behavior—with a priority on native performance and ABI fidelity. JS support is deferred; native heap and C/Metal interop are the focus.
 
-## Why KLang Exists
+## Why KLangNative Exists
 
 Multiple large-scale C-to-Kotlin porting projects failed or took months to debug due to subtle behavioral differences between Kotlin and C:
 
@@ -16,17 +16,16 @@ Multiple large-scale C-to-Kotlin porting projects failed or took months to debug
 - **High-precision computation (HPC)** code couldn't be reliably ported
 - **Mark Adler's compression algorithms** relied on specific C bit manipulation semantics
 
-KLang solves these issues by implementing C semantics in pure, portable Kotlin.
+KLangNative solves these issues by implementing C semantics in pure, portable Kotlin with a priority on native performance and ABI fidelity.
 
-## Why KLang?
+## Why KLangNative?
 
-KLang bridges the gap between Kotlin's high-level abstractions and C's low-level control, enabling:
+KLangNative bridges the gap between Kotlin's high-level abstractions and C's low-level control, enabling:
 
 - **Exact C behavior**: Bit-exact replication of C operations in pure Kotlin
-- **Cross-platform determinism**: Identical behavior across JVM, JS, and Native targets with explicit little-endian semantics
-- **Pure Kotlin implementation**: No native dependencies, GMP, or glibc required — everything is reproducible Kotlin code
+- **Cross-platform determinism (native/JVM)**: Identical behavior across Kotlin/Native and JVM with explicit little-endian semantics
 - **C code porting**: Direct mapping of C memory models, pointer arithmetic, and type semantics
-- **Performance**: Native-speed operations with optional arithmetic-mode for bit-exact C compatibility
+- **Performance focus**: Native-speed operations; arithmetic mode available when bit-exact C compatibility is required
 
 ## Key Innovations
 
@@ -71,13 +70,9 @@ All types use heap-based storage for zero-copy operations and exact C memory lay
 
 ## Platform Support
 
-- **JavaScript**: ES2015+ with ES modules (browser environment)
-- **Native**: 
-  - macOS (ARM64, x64)
-  - Linux (x64, ARM64)  
-  - Windows (x64 via MinGW)
-
-All platforms provide **identical semantics** — no endianness leaks, no platform-specific floating-point quirks.
+- **Native**: macOS (ARM64, x64), Linux (x64, ARM64), Windows (x64 via MinGW)
+- **JVM**: runs with identical semantics via the pure Kotlin implementation
+- **JavaScript**: currently out-of-scope; requires a Node/WASM addon for zero-copy, C-layout buffers
 
 ## Use Cases
 
@@ -109,13 +104,7 @@ All platforms provide **identical semantics** — no endianness leaks, no platfo
 
 ## Documentation
 
-Detailed documentation available in [`docs/klang/`](docs/klang/):
-- [00-index.md](docs/klang/00-index.md) — Documentation overview
-- [01-overview.md](docs/klang/01-overview.md) — Architecture and key concepts
-- [02-global-heap.md](docs/klang/02-global-heap.md) — Memory model
-- [03-allocator-kmalloc.md](docs/klang/03-allocator-kmalloc.md) — Allocator design
-- [05-bitshift-engine.md](docs/klang/05-bitshift-engine.md) — Shift strategies
-- [11-poc-benchmark.md](docs/klang/11-poc-benchmark.md) — Performance analysis
+See `docs/` for architecture, heap, bitshift engine, porting guide, and testing strategy. Start at `docs/README.md`.
 
 ## Building
 
