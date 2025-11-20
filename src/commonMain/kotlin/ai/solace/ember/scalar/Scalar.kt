@@ -28,6 +28,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toFloat().toInt()
         override fun toLong() = value.toFloat().toLong()
+
+        operator fun compareTo(other: Float16): Int = value.toFloat().compareTo(other.value.toFloat())
         
         operator fun plus(other: Float16) = Float16(value + other.value)
         operator fun minus(other: Float16) = Float16(value - other.value)
@@ -48,6 +50,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toFloat().toInt()
         override fun toLong() = value.toFloat().toLong()
+
+        operator fun compareTo(other: Float32): Int = value.toFloat().compareTo(other.value.toFloat())
         
         operator fun plus(other: Float32) = Float32(value + other.value)
         operator fun minus(other: Float32) = Float32(value - other.value)
@@ -68,6 +72,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toDouble().toInt()
         override fun toLong() = value.toDouble().toLong()
+
+        operator fun compareTo(other: Float64): Int = value.toDouble().compareTo(other.value.toDouble())
 
         operator fun plus(other: Float64) = Float64(value + other.value)
         operator fun minus(other: Float64) = Float64(value - other.value)
@@ -127,6 +133,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toInt()
         override fun toLong() = value.toLong()
+
+        operator fun compareTo(other: Int8): Int = value.compareTo(other.value)
         
         operator fun plus(other: Int8) = Int8((value + other.value).toByte())
         operator fun minus(other: Int8) = Int8((value - other.value).toByte())
@@ -143,6 +151,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value
         override fun toLong() = value.toLong()
+
+        operator fun compareTo(other: Int32): Int = value.compareTo(other.value)
         
         operator fun plus(other: Int32) = Int32(value + other.value)
         operator fun minus(other: Int32) = Int32(value - other.value)
@@ -159,6 +169,8 @@ sealed class Scalar {
         override fun toFloat() = value.toFloat()
         override fun toInt() = value.toInt()
         override fun toLong() = value
+
+        operator fun compareTo(other: Int64): Int = value.compareTo(other.value)
         
         operator fun plus(other: Int64) = Int64(value + other.value)
         operator fun minus(other: Int64) = Int64(value - other.value)

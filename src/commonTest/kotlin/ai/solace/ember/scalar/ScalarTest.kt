@@ -61,6 +61,18 @@ class ScalarTest {
     }
 
     @Test
+    fun testFloatComparisons() {
+        val a = Scalar.Float32(CFloat32.fromFloat(2.0f))
+        val b = Scalar.Float32(CFloat32.fromFloat(3.0f))
+        assertTrue(a < b)
+        assertTrue(b > a)
+        val c = Scalar.Float64(CDouble.fromDouble(4.0))
+        val d = Scalar.Float64(CDouble.fromDouble(4.0))
+        assertTrue(c >= d)
+        assertTrue(c <= d)
+    }
+
+    @Test
     fun smokeFloat16Ops() {
         val a = Scalar.Float16(CFloat16.fromFloat(1.5f))
         val b = Scalar.Float16(CFloat16.fromFloat(0.5f))
@@ -87,6 +99,17 @@ class ScalarTest {
         
         val quotient = a / b
         assertEquals(3, quotient.toInt())
+    }
+
+    @Test
+    fun testIntComparisons() {
+        val a = Scalar.Int32(1)
+        val b = Scalar.Int32(2)
+        assertTrue(a < b)
+        val c = Scalar.Int64(5L)
+        val d = Scalar.Int64(5L)
+        assertTrue(c >= d)
+        assertTrue(c == d)
     }
     
     @Test
