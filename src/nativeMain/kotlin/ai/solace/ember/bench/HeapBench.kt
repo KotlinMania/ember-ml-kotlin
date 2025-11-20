@@ -164,8 +164,8 @@ private fun benchNativeHeap(size: Int, iters: Int): Long {
 fun heapBenchMain() {
     // Keep runs short to avoid CI timeouts; scale iters with size.
     val cases = listOf(1_024 to 200, 16_384 to 80)
-    println("heap vs array roundtrip (Float32 + 16-bit limbs)")
-    println("size\titers\tscalar_ms\tbulk_ms\tpacked_ms\tinplace_ms\tnative_ms\tarray_ms\tscalar/arr\tbulk/arr\tpacked/arr\tinplace/arr\tnative/arr\tchecksum_f32\tshort_ms\tshort_array_ms\tshort/arr\tchecksum_s16")
+    println("heap vs array roundtrip (Float32)")
+    println("size\titers\theap_scalar_ms\theap_bulk_ms\theap_packed_ms\theap_inplace_ms\tnative_ms\tarray_ms\theap_scalar/arr\theap_bulk/arr\theap_packed/arr\theap_inplace/arr\tnative/arr\tchecksum_f32")
     for ((s, iters) in cases) {
         val heap = benchHeap(s, iters)
         val heapBulk = benchHeapBulk(s, iters)
@@ -178,11 +178,8 @@ fun heapBenchMain() {
         val ratioPacked = if (arr > 0) (heapPacked.toDouble() / arr * 100).roundToInt() / 100.0 else Double.NaN
         val ratioInPlace = if (arr > 0) (heapInPlace.toDouble() / arr * 100).roundToInt() / 100.0 else Double.NaN
         val ratioNative = if (arr > 0) (native.toDouble() / arr * 100).roundToInt() / 100.0 else Double.NaN
-        val (heapShort, checksumShort) = benchHeapInPlace16(s, iters)
-        val arrShort = benchArray16(s, iters)
-        val ratioShort = if (arrShort > 0) (heapShort.toDouble() / arrShort * 100).roundToInt() / 100.0 else Double.NaN
         println(
-            "$s\t$iters\t$heap\t$heapBulk\t$heapPacked\t$heapInPlace\t$native\t$arr\t$ratioScalar\t$ratioBulk\t$ratioPacked\t$ratioInPlace\t$ratioNative\t$checksum\t$heapShort\t$arrShort\t$ratioShort\t$checksumShort"
+            "$s\t$iters\t$heap\t$heapBulk\t$heapPacked\t$heapInPlace\t$native\t$arr\t$ratioScalar\t$ratioBulk\t$ratioPacked\t$ratioInPlace\t$ratioNative\t$checksum"
         )
     }
 }
