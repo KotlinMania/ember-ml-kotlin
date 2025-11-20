@@ -30,23 +30,45 @@ class ScalarTest {
         assertEquals(DType.Float64, s.dtype)
         assertEquals(5.0, s.toDouble(), 0.0001)
     }
+
+    @Test
+    fun smokeFloat64Ops() {
+        val a = Scalar.Float64(CDouble.fromDouble(2.0))
+        val b = Scalar.Float64(CDouble.fromDouble(3.0))
+
+        assertEquals(5.0, (a + b).toDouble(), 0.0)
+        assertEquals(-1.0, (a - b).toDouble(), 0.0)
+        assertEquals(6.0, (a * b).toDouble(), 0.0)
+        assertEquals(2.0 / 3.0, (a / b).toDouble(), 1e-12)
+    }
     
     @Test
     fun testFloat32Arithmetic() {
         val a = Scalar.Float32(CFloat32.fromFloat(5.0f))
         val b = Scalar.Float32(CFloat32.fromFloat(3.0f))
-        
+
         val sum = a + b
         assertEquals(8.0f, sum.toFloat(), 0.0001f)
-        
+
         val diff = a - b
         assertEquals(2.0f, diff.toFloat(), 0.0001f)
-        
+
         val product = a * b
         assertEquals(15.0f, product.toFloat(), 0.0001f)
-        
+
         val quotient = a / b
         assertEquals(1.6666f, quotient.toFloat(), 0.01f)
+    }
+
+    @Test
+    fun smokeFloat16Ops() {
+        val a = Scalar.Float16(CFloat16.fromFloat(1.5f))
+        val b = Scalar.Float16(CFloat16.fromFloat(0.5f))
+
+        assertEquals(2.0f, (a + b).toFloat(), 0.01f)
+        assertEquals(1.0f, (a - b).toFloat(), 0.01f)
+        assertEquals(0.75f, (a * b).toFloat(), 0.01f)
+        assertEquals(3.0f, (a / b).toFloat(), 0.05f)
     }
     
     @Test

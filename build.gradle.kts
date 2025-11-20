@@ -10,6 +10,7 @@ group = "ai.solace.ember"
 version = "0.1.0"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -27,15 +28,21 @@ kotlin {
             executable("limbBench") {
                 entryPoint = "ai.solace.ember.bench.main"
             }
+            executable("heapBench") {
+                entryPoint = "ai.solace.ember.bench.heapBenchMain"
+            }
         }
     }
     mingwX64()
 
-    // JavaScript target
+    // JavaScript target (disabled until we add a Node N-API/WASM addon to supply
+    // zero-copy C-layout buffers; JS GC heap is too small for parity today).
+    /*
     js(IR) {
         browser()
         nodejs()
     }
+    */
 
     sourceSets {
         val commonMain by getting {
@@ -44,9 +51,7 @@ kotlin {
                 implementation("org.jetbrains.kotlinx:atomicfu:0.23.1")
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
-                implementation("ai.solace:klang") {
-                    version { branch = "main" }
-                }
+                implementation("ai.solace:klang:0.7.1")
             }
             kotlin.srcDir("src/commonMain/kotlin")
             resources.srcDir("src/commonMain/resources")
@@ -105,18 +110,7 @@ kotlin {
         }
         val mingwX64Test by getting { dependsOn(nativeTest) }
 
-        // JavaScript source sets
-        val jsMain by getting {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-js:1.9.0")
-            }
-        }
-        val jsTest by getting {
-            dependencies {
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test-js:1.9.0")
-            }
-            kotlin.setSrcDirs(emptyList<File>())
-        }
+        // JavaScript source sets (JS target currently disabled in kotlin { } to prioritize native)
     }
 }
 
