@@ -1,4 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.CInteropProcess
+import java.io.File
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform") version "2.2.20"
@@ -8,7 +10,7 @@ plugins {
 }
 
 
-group = "ai.solace.emberml"
+group = "ai.solace.ember"
 version = "0.1.0"
 
 repositories {
@@ -25,6 +27,9 @@ kotlin {
         binaries {
             executable("poc") {
                 entryPoint = "ai.solace.klang.poc.main"
+            }
+            executable("limbBench") {
+                entryPoint = "ai.solace.ember.bench.main"
             }
         }
     }
@@ -47,6 +52,14 @@ kotlin {
             kotlin.srcDir("src/commonMain/kotlin")
             resources.srcDir("src/commonMain/resources")
             kotlin.exclude(
+                "ai/solace/ember/backend/metal/**",
+                "ai/solace/ember/backend/storage/**",
+                "ai/solace/ember/actors/**",
+                "ai/solace/ember/nn/**",
+                "ai/solace/ember/ops/**",
+                "ai/solace/ember/tensor/**",
+                "ai/solace/ember/training/**",
+                "ai/solace/ember/utils/**",
                 "ai/solace/emberml/**",
             )
         }
@@ -55,17 +68,8 @@ kotlin {
                 implementation(kotlin("test"))
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
             }
-            kotlin.srcDir("src/commonTest/kotlin")
-            resources.srcDir("src/commonTest/resources")
-            kotlin.exclude(
-                // No exclusions for MegaFloatTest.kt and MegaIntegerTest.kt anymore
-                // "ai/solace/emberml/tensor/bitwise/MegaFloatTest.kt",
-                // "ai/solace/emberml/tensor/bitwise/MegaIntegerTest.kt",
-                "ai/solace/emberml/**",
-                "ai/solace/klang/int/hpc/**",
-                "ai/solace/emberml/tensor/bitwise/DebugTest.kt"
-                // MegaBinaryStubTest.kt is intentionally not excluded
-            )
+            kotlin.setSrcDirs(listOf("src/commonTest/kotlin/ai/solace/limbengine"))
+            resources.setSrcDirs(emptyList<File>())
         }
         // Native source sets
         val nativeMain by creating {
@@ -94,6 +98,7 @@ kotlin {
         val macosX64Test by getting { dependsOn(nativeTest) }
         val macosArm64Main by getting {
             dependsOn(nativeMain)
+            kotlin.setSrcDirs(emptyList<File>())
         }
         val macosArm64Test by getting { dependsOn(nativeTest) }
         val mingwX64Main by getting {
@@ -115,6 +120,69 @@ kotlin {
         }
     }
 }
+
+// Native test verbosity can be enabled ad-hoc via CLI if needed:
+//   ./gradlew macosArm64Test --info --rerun-tasks \
+//      -Dkotlin.tests.verbose=true
+
+// Convenience task: run the Kotlin/Native test binary directly with a simple, verbose logger
+// so per-test names and PASS/FAIL lines are printed to the console.
+tasks.register<Exec>("nativeTestVerbose") {
+    description = "Run macOS arm64 native tests with verbose logger"
+    group = "verification"
+    dependsOn("linkDebugTestMacosArm64")
+    doFirst {
+        val bin = layout.projectDirectory.file("build/bin/macosArm64/debugTest/test.kexe").asFile
+        if (!bin.exists()) throw GradleException("Native test binary not found: $bin. Run linkDebugTestMacosArm64 first.")
+        commandLine(bin.absolutePath, "--ktest_logger=SIMPLE")
+    }
+}
+
+// Policy: forbid handled exceptions in tests. Fail build if tests contain try/catch or
+// exception-wrapping helpers (assertFails, runCatching, etc.).
+// Toggle with -PallowHandledExceptionsInTests=true to bypass, if needed temporarily.
+tasks.register("forbidExceptionsInTests") {
+    group = "verification"
+    description = "Fails if tests contain try/catch or exception-wrapping helpers"
+    doLast {
+        val allow = (project.findProperty("allowHandledExceptionsInTests") as String?)?.toBoolean() == true
+        if (allow) return@doLast
+
+        // Only scan active test sources (we currently point commonTest to this subdir)
+        val testRoots = listOf(
+            layout.projectDirectory.dir("src/commonTest/kotlin/ai/solace/limbengine"),
+        )
+        val forbidden = listOf(
+            "\\btry\\s*\\{",
+            "\\bcatch\\s*\\(",
+            "\\bassertFails\\b",
+            "\\bassertFailsWith\\b",
+            "\\brunCatching\\s*\\(",
+            "\\bResult\\.runCatching\\s*\\(",
+        ).map { Regex(it) }
+
+        val offenders = mutableListOf<String>()
+        testRoots.forEach { root ->
+            if (!root.asFile.exists()) return@forEach
+            root.asFile.walkTopDown()
+                .filter { it.isFile && it.extension == "kt" }
+                .forEach { file ->
+                    val text = file.readText()
+                    if (forbidden.any { it.containsMatchIn(text) }) {
+                        offenders += file.relativeTo(layout.projectDirectory.asFile).path
+                    }
+                }
+        }
+        if (offenders.isNotEmpty()) {
+            throw GradleException(
+                "Handled exceptions are forbidden in tests. Offending files:\n" + offenders.joinToString("\n")
+            )
+        }
+    }
+}
+
+tasks.named("macosArm64Test").configure { dependsOn("forbidExceptionsInTests") }
+tasks.named("nativeTestVerbose").configure { dependsOn("forbidExceptionsInTests") }
 
 publishing {
     publications {

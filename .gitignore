@@ -48,3 +48,4 @@ ehthumbs.db
 Thumbs.db
 build/js/
 .DS_Store
+/.kotlin/

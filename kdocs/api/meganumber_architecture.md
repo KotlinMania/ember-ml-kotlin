@@ -340,7 +340,7 @@ class MegaNumber(
 #### 4.1.1 Class Definition
 
 ```kotlin
-// package ai.solace.emberml.tensor.bitwise
+// package ai.solace.ember.tensor.bitwise
 
 /**
  * Default implementation of BasicArithmeticOperations interface.
@@ -598,7 +598,7 @@ class DefaultArithmeticCalculator(private val megaNumber: MegaNumber) : BasicAri
 #### 4.2.1 Class Definition
 
 ```kotlin
-// package ai.solace.emberml.tensor.bitwise
+// package ai.solace.ember.tensor.bitwise
 
 /**
  * Default implementation of FloatSpecificOperations interface.
@@ -874,7 +874,7 @@ class DefaultFloatOperations(private val megaNumber: MegaNumber) : FloatSpecific
 #### 4.3.1 MegaNumber Class Update
 
 ```
-// package ai.solace.emberml.tensor.bitwise
+// package ai.solace.ember.tensor.bitwise
 
 /**
  * A chunk-based big integer (or float) with arbitrary precision arithmetic,

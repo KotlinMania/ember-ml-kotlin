@@ -1,5 +1,0 @@
-language = C
-package = ai.solace.kcoro
-headers = kcoro.h kcoro_core.h kcoro_sched.h kcoro_desc.h kcoro_token_kernel.h kcoro_zcopy.h kc_arena.h kcoro_port.h
-headerFilter = **
-compilerOpts = -DKC_SCHED=1

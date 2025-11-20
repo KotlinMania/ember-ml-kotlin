@@ -2,6 +2,7 @@ package ai.solace.ember.scalar
 
 import ai.solace.ember.dtype.DType
 import ai.solace.klang.bitwise.CFloat32
+import ai.solace.ember.backend.klang.LimbEngineActor
 import ai.solace.klang.fp.CFloat16
 import ai.solace.klang.fp.CFloat64
 
@@ -75,6 +76,45 @@ sealed class Scalar {
         operator fun unaryMinus() = Float64(-value)
         
         override fun toString() = value.toString()
+    }
+
+    // ============================================
+    // Float128 scalar (128-bit extended precision via BigScalar)
+    // ============================================
+
+    data class Float128(val value: BigScalar) : Scalar() {
+        override val dtype = DType.Float128
+        override fun toDouble(): Double = value.toDecimalString(DEFAULT_FLOAT128_DIGITS).toDouble()
+        override fun toFloat(): Float = toDouble().toFloat()
+        override fun toInt(): Int = toDouble().toInt()
+        override fun toLong(): Long = toDouble().toLong()
+
+        fun toDecimalString(maxDigits: Int? = null): String = value.toDecimalString(maxDigits)
+
+        operator fun plus(other: Float128) = Float128(value.add(other.value))
+        operator fun minus(other: Float128) = Float128(value.sub(other.value))
+        operator fun times(other: Float128) = Float128(value.mul(other.value))
+        operator fun div(other: Float128) = Float128(value.div(other.value))
+        operator fun unaryMinus() = Float128(BigScalar.zero().sub(value))
+
+        fun shiftLeft(bits: Int): Float128 = Float128(value.copy().shiftLeft(bits))
+        fun shiftRight(bits: Int): Float128 = Float128(value.copy().shiftRight(bits))
+
+        fun flush(): Float128 = Float128(value.copy().flush())
+
+        suspend fun plusAsync(other: Float128): Float128 =
+            Float128(LimbEngineActor.add(value, other.value))
+
+        suspend fun minusAsync(other: Float128): Float128 =
+            Float128(LimbEngineActor.subtract(value, other.value))
+
+        suspend fun timesAsync(other: Float128): Float128 =
+            Float128(LimbEngineActor.multiply(value, other.value))
+
+        suspend fun divAsync(other: Float128): Float128 =
+            Float128(LimbEngineActor.divide(value, other.value))
+
+        override fun toString(): String = value.toDecimalString(DEFAULT_FLOAT128_DIGITS)
     }
     
     // ============================================
@@ -156,6 +196,7 @@ sealed class Scalar {
             DType.Float16 -> Float16(CFloat16.fromFloat(value.toFloat()))
             DType.Float32 -> Float32(CFloat32.fromFloat(value.toFloat()))
             DType.Float64 -> Float64(CFloat64.fromDouble(value.toDouble()))
+            DType.Float128 -> Float128(BigScalar.fromDecimalString(value.toString()))
             DType.Int8 -> Int8(value.toByte())
             DType.Int32 -> Int32(value.toInt())
             DType.Int64 -> Int64(value.toLong())
@@ -166,5 +207,6 @@ sealed class Scalar {
          * Create scalar from boolean.
          */
         fun fromBoolean(value: Boolean): Scalar = Bool(value)
+        const val DEFAULT_FLOAT128_DIGITS = 64
     }
 }
