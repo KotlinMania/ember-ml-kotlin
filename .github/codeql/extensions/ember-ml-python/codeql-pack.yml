@@ -1,7 +1,0 @@
-name: solaceharmony/ember-ml-python
-version: 0.0.0
-library: true
-extensionTargets:
-  codeql/python-all: '*'
-dataExtensions:
-  - models/**/*.yml
