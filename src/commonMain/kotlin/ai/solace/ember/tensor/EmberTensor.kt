@@ -167,8 +167,15 @@ class EmberTensor private constructor(
             return transpose2D()
         }
         
-        // General case would need more complex logic
-        TODO("General transpose not yet implemented")
+        // TODO: General transpose for N-dimensional tensors
+        // Current implementation only supports 2D transpose (matrix transpose).
+        // For higher dimensions, would need to implement generic permutation logic:
+        //   1. Compute new strides from permutation
+        //   2. Reorder data according to new layout
+        //   3. Handle edge cases (identity permutation, etc.)
+        // Priority: MEDIUM (needed for advanced tensor manipulation)
+        // Timeline: Next iteration after basic features are complete
+        throw NotImplementedError("General transpose not yet implemented. Only 2D transpose is supported.")
     }
     
     private fun transpose2D(): EmberTensor {
@@ -416,7 +423,20 @@ class EmberTensor private constructor(
                 }
             }
             
-            TODO("Reduction along axis not yet implemented for tensors with ndim > 2")
+            // TODO: N-dimensional reductions (for tensors with ndim > 2)
+            // Current limitation: Only 1D and 2D tensors are fully supported.
+            // For higher dimensions, would need to implement:
+            //   1. Stride calculation for arbitrary axis selection
+            //   2. Multi-dimensional slicing/iteration
+            //   3. Memory-efficient reduction algorithms
+            // Priority: MEDIUM (needed for deep learning applications)
+            // Timeline: Will implement alongside broadcasting system
+            // Workaround: Users can reshape to 2D, reduce, then reshape back
+            throw NotImplementedError(
+                "Reduction along axis not yet implemented for tensors with ndim > 2. " +
+                "Current implementation supports 1D and 2D tensors only. " +
+                "For higher dimensions, consider reshaping to 2D first."
+            )
         }
     }
 }
