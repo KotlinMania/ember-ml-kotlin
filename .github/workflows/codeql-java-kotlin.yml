@@ -2,7 +2,7 @@ name: CodeQL (Java/Kotlin)
 
 # Synthetic KMP extraction pass.
 #
-# `codeqlCompileJvm` is a JavaExec task in build.gradle.kts that runs
+# `codeqlCompileJvm` is a JavaExec task in codeql-build/build.gradle.kts that runs
 # kotlin-compiler-embeddable against commonMain as a single-target JVM compile.
 # That keeps the CodeQL Java agent on the K2JVMCompiler path that emits Kotlin
 # TRAP. Non-Android CodeQL must not install the Android SDK.
@@ -44,7 +44,7 @@ jobs:
         run: |
           export JAVA_TOOL_OPTIONS="-javaagent:${CODEQL_EXTRACTOR_JAVA_ROOT}/tools/codeql-java-agent.jar=java,kotlin"
           echo "JAVA_TOOL_OPTIONS=${JAVA_TOOL_OPTIONS}"
-          ./gradlew --no-daemon codeqlCompileJvm -Pkotlinmania.codeql=true --no-configuration-cache
+          ./gradlew --no-daemon --project-dir codeql-build codeqlCompileJvm -Pkotlinmania.codeql=true --no-configuration-cache
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v4.37.9
