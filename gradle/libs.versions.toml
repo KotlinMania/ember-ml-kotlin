@@ -4,7 +4,7 @@ coroutines = "1.11.0"
 serialization = "1.11.0"
 datetime = "0.8.0"
 collectionsImmutable = "0.5.2"
-androidKmp = "9.4.0"
+androidKmp = "9.4.1"
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
 kotlinxBenchmark = "0.4.19"
