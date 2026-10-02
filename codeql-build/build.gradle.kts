@@ -121,35 +121,19 @@ fun registerCodeqlCompileTask(
         outputs.dir(outDir)
         outputs.dir(aarExtractDir)
 
-        // When no real Kotlin sources exist yet (early-stage port), generate a
-        // minimal dummy source so CodeQL's Java/Kotlin extractor has something to
-        // compile. Without this, the onlyIf guard skips the build task and CodeQL
-        // fails with "didn't build any Java/Kotlin" — a fatal error.
-        val dummySourceDir = layout.buildDirectory.dir("codeql-empty-source/$taskName")
-        val dummyNamespace =
-            propertyValue("project.namespace", "io.github.kotlinmania").let { ns ->
-                ns.split(".").last()
-            }
-        val dummySourceFile =
-            dummySourceDir
-                .map { it.file("$dummyNamespace/codeql/_CodeqlEmptySource.kt") }
-
-        onlyIf("CodeQL Kotlin extraction always runs (dummy source if needed)") {
+        onlyIf("selected CodeQL Kotlin source sets contain sources") {
             val commonSourceFiles = commonSources.files
             val sourceFiles = sources.files
             if (commonSourceFiles.isEmpty() || sourceFiles.isEmpty()) {
                 logger.lifecycle(
-                    "$taskName: no real Kotlin sources found for common source sets " +
+                    "Skipping $taskName: no Kotlin sources found for common source sets " +
                         "${codeqlKotlinCommonSourceSetNames.joinToString(",")} or target source sets " +
-                        sourceSetNames.joinToString(",") + " — generating dummy source for CodeQL extraction",
+                        sourceSetNames.joinToString(","),
                 )
-                val file = dummySourceFile.get().asFile
-                file.parentFile.mkdirs()
-                file.writeText(
-                    "package $dummyNamespace.codeql\n\nprivate object _CodeqlEmptySource\n",
-                )
+                false
+            } else {
+                true
             }
-            true
         }
 
         doFirst {
@@ -171,13 +155,6 @@ fun registerCodeqlCompileTask(
                     .joinToString(File.pathSeparator) { it.absolutePath }
             val commonSourceFiles = commonSources.files.toMutableList()
             val sourceFiles = sources.files.toMutableList()
-            // If no real sources were found, use the dummy source generated in onlyIf.
-            if (commonSourceFiles.isEmpty()) {
-                commonSourceFiles.add(dummySourceFile.get().asFile)
-            }
-            if (sourceFiles.isEmpty()) {
-                sourceFiles.add(dummySourceFile.get().asFile)
-            }
             args =
                 listOf(
                     "-d",

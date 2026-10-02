@@ -25,16 +25,16 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v6
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v6.0.0
+        uses: actions/setup-java@v5.2.0
         with:
           distribution: zulu
           java-version: '21'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6.3.0
+        uses: gradle/actions/setup-gradle@v6.1.0
 
       # NOTE: do NOT add a `maxim-lobanov/setup-xcode` step here.
       # KotlinMania's enterprise GitHub Actions policy does not whitelist
@@ -86,6 +86,25 @@ jobs:
           MACOSX_DEPLOYMENT_TARGET: "14.0"
           DEPLOYMENT_TARGET_SETTING_NAME: MACOSX_DEPLOYMENT_TARGET
         run: ./gradlew embedSwiftExportForXcode --no-configuration-cache
+
+      - name: Set Swift package macOS platform
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          package = Path("build/SPMPackage/macosArm64/Debug/Package.swift")
+          text = package.read_text()
+          if "platforms:" not in text:
+              package.write_text(
+                  re.sub(
+                      r'(name:\s*"[^"]*",)',
+                      r'\1\n    platforms: [.macOS(.v14)],',
+                      text,
+                      count=1,
+                  )
+              )
+          PY
 
       - name: Run swift test against Kotlin-exported module
         working-directory: swift-test-harness
