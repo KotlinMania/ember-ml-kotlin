@@ -10,7 +10,9 @@ enum class DType {
     INT32,
     INT64,
     UINT8,
-    BOOL;
+    BOOL,
+    ;
+
     // TODO: Add INT8, INT16 support - requires updating all when expressions
     // INT8,
     // INT16,
@@ -20,26 +22,28 @@ enum class DType {
      *
      * @return A string representation of the data type.
      */
-    override fun toString(): String = when (this) {
-        FLOAT32 -> "float32"
-        FLOAT64 -> "float64"
-        INT32 -> "int32"
-        INT64 -> "int64"
-        UINT8 -> "uint8"
-        BOOL -> "bool"
-    }
+    override fun toString(): String =
+        when (this) {
+            FLOAT32 -> "float32"
+            FLOAT64 -> "float64"
+            INT32 -> "int32"
+            INT64 -> "int64"
+            UINT8 -> "uint8"
+            BOOL -> "bool"
+        }
 
     /**
      * Gets the size in bytes of this data type.
      */
-    val sizeInBytes: Int get() = when (this) {
-        FLOAT32 -> 4
-        FLOAT64 -> 8
-        INT32 -> 4
-        INT64 -> 8
-        UINT8 -> 1
-        BOOL -> 1
-    }
+    val sizeInBytes: Int get() =
+        when (this) {
+            FLOAT32 -> 4
+            FLOAT64 -> 8
+            INT32 -> 4
+            INT64 -> 8
+            UINT8 -> 1
+            BOOL -> 1
+        }
 
     companion object {
         /**
@@ -48,18 +52,19 @@ enum class DType {
          * @param name The string representation of the data type.
          * @return The corresponding data type, or null if not found.
          */
-        fun fromString(name: String): DType? = when (name.lowercase()) {
-            "float32", "float" -> FLOAT32
-            "float64", "double" -> FLOAT64
-            "int32", "int" -> INT32
-            "int64", "long" -> INT64
-            "uint8", "byte" -> UINT8
-            "bool", "boolean" -> BOOL
-            // TODO: Add when INT8, INT16 are enabled
-            // "int8", "sbyte" -> INT8
-            // "int16", "short" -> INT16
-            else -> null
-        }
+        fun fromString(name: String): DType? =
+            when (name.lowercase()) {
+                "float32", "float" -> FLOAT32
+                "float64", "double" -> FLOAT64
+                "int32", "int" -> INT32
+                "int64", "long" -> INT64
+                "uint8", "byte" -> UINT8
+                "bool", "boolean" -> BOOL
+                // TODO: Add when INT8, INT16 are enabled
+                // "int8", "sbyte" -> INT8
+                // "int16", "short" -> INT16
+                else -> null
+            }
     }
 }
 

@@ -1,7 +1,7 @@
 package ai.solace.ember.tensor.common
 
-import ai.solace.ember.tensor.interfaces.TensorInterface
 import ai.solace.ember.backend.BackendRegistry
+import ai.solace.ember.tensor.interfaces.TensorInterface
 
 /**
  * The main tensor class that users interact with.
@@ -18,9 +18,8 @@ class EmberTensor(
     override val dtype: DType,
     override val device: String = "cpu",
     override val requiresGrad: Boolean = false,
-    internal val backendTensor: Any
+    internal val backendTensor: Any,
 ) : TensorInterface {
-
     /**
      * Creates a tensor from a list of values.
      *
@@ -33,13 +32,13 @@ class EmberTensor(
         data: List<*>,
         dtype: DType = float32,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         shape = inferShape(data),
         dtype = dtype,
         device = device,
         requiresGrad = requiresGrad,
-        backendTensor = createBackendTensor(data, dtype, device, requiresGrad)
+        backendTensor = createBackendTensor(data, dtype, device, requiresGrad),
     )
 
     /**
@@ -54,12 +53,12 @@ class EmberTensor(
         data: Array<*>,
         dtype: DType = float32,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         data.toList(),
         dtype,
         device,
-        requiresGrad
+        requiresGrad,
     )
 
     /**
@@ -74,12 +73,12 @@ class EmberTensor(
         data: IntArray,
         dtype: DType = int32,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         data.toList(),
         dtype,
         device,
-        requiresGrad
+        requiresGrad,
     )
 
     /**
@@ -94,12 +93,12 @@ class EmberTensor(
         data: FloatArray,
         dtype: DType = float32,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         data.toList(),
         dtype,
         device,
-        requiresGrad
+        requiresGrad,
     )
 
     /**
@@ -114,12 +113,12 @@ class EmberTensor(
         data: DoubleArray,
         dtype: DType = float64,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         data.toList(),
         dtype,
         device,
-        requiresGrad
+        requiresGrad,
     )
 
     /**
@@ -134,12 +133,12 @@ class EmberTensor(
         data: BooleanArray,
         dtype: DType = bool,
         device: String = "cpu",
-        requiresGrad: Boolean = false
+        requiresGrad: Boolean = false,
     ) : this(
         data.toList(),
         dtype,
         device,
-        requiresGrad
+        requiresGrad,
     )
 
     /**
@@ -158,7 +157,7 @@ class EmberTensor(
             dtype = dtype,
             device = this.device,
             requiresGrad = this.requiresGrad,
-            backendTensor = newBackendTensor
+            backendTensor = newBackendTensor,
         )
     }
 
@@ -178,7 +177,7 @@ class EmberTensor(
             dtype = this.dtype,
             device = this.device,
             requiresGrad = this.requiresGrad,
-            backendTensor = newBackendTensor
+            backendTensor = newBackendTensor,
         )
     }
 
@@ -202,7 +201,7 @@ class EmberTensor(
             dtype = this.dtype,
             device = this.device,
             requiresGrad = this.requiresGrad,
-            backendTensor = newBackendTensor
+            backendTensor = newBackendTensor,
         )
     }
 
@@ -211,9 +210,7 @@ class EmberTensor(
      *
      * @return A string representation of the tensor.
      */
-    override fun toString(): String {
-        return "EmberTensor(shape=$shape, dtype=$dtype, device=$device, requiresGrad=$requiresGrad)"
-    }
+    override fun toString(): String = "EmberTensor(shape=$shape, dtype=$dtype, device=$device, requiresGrad=$requiresGrad)"
 
     /**
      * Adds another tensor to this tensor.
@@ -233,7 +230,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -255,7 +252,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -277,7 +274,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -299,7 +296,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -321,7 +318,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -347,7 +344,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -371,7 +368,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -396,7 +393,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -421,7 +418,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -442,7 +439,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = false, // Bit count operations don't require gradients
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -463,7 +460,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = false,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -487,7 +484,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = false,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -512,7 +509,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -536,7 +533,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -558,7 +555,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -580,7 +577,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -602,7 +599,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad || other.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -623,7 +620,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -647,7 +644,7 @@ class EmberTensor(
             dtype = resultDType,
             device = resultDevice,
             requiresGrad = this.requiresGrad,
-            backendTensor = resultTensor
+            backendTensor = resultTensor,
         )
     }
 
@@ -683,7 +680,7 @@ class EmberTensor(
             data: List<*>,
             dtype: DType,
             device: String,
-            requiresGrad: Boolean
+            requiresGrad: Boolean,
         ): Any {
             // Delegate to the current backend's tensor creation function
             val backend = BackendRegistry.getCurrentBackend()
@@ -717,7 +714,7 @@ class EmberTensor(
                 dtype = resultDType,
                 device = resultDevice,
                 requiresGrad = waves.any { it.requiresGrad },
-                backendTensor = resultTensor
+                backendTensor = resultTensor,
             )
         }
 
@@ -734,7 +731,7 @@ class EmberTensor(
             length: Int,
             dutyCycle: Float,
             dtype: DType = int32,
-            device: String = "cpu"
+            device: String = "cpu",
         ): EmberTensor {
             val backend = BackendRegistry.getCurrentBackend()
             val resultTensor = backend.createDutyCycle(length, dutyCycle, dtype)
@@ -747,7 +744,7 @@ class EmberTensor(
                 dtype = resultDType,
                 device = resultDevice,
                 requiresGrad = false,
-                backendTensor = resultTensor
+                backendTensor = resultTensor,
             )
         }
 
@@ -764,7 +761,7 @@ class EmberTensor(
             length: Int,
             halfPeriod: Int,
             dtype: DType = int32,
-            device: String = "cpu"
+            device: String = "cpu",
         ): EmberTensor {
             val backend = BackendRegistry.getCurrentBackend()
             val resultTensor = backend.generateBlockySin(length, halfPeriod, dtype)
@@ -777,7 +774,7 @@ class EmberTensor(
                 dtype = resultDType,
                 device = resultDevice,
                 requiresGrad = false,
-                backendTensor = resultTensor
+                backendTensor = resultTensor,
             )
         }
     }

@@ -8,8 +8,8 @@
  */
 package ai.solace.ember.actors
 
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 
 /**
  * Base interface for all actors in the system.
@@ -17,17 +17,16 @@ import kotlinx.coroutines.CoroutineScope
  * @param M The message type this actor handles
  */
 interface Actor<M : Any> {
-    
     /**
      * The mailbox channel for receiving messages.
      */
     val mailbox: Channel<M>
-    
+
     /**
      * The coroutine scope for this actor.
      */
     val scope: CoroutineScope
-    
+
     /**
      * Handle a received message.
      * This method is called for each message received by the actor.
@@ -35,12 +34,12 @@ interface Actor<M : Any> {
      * @param message The message to handle
      */
     suspend fun receive(message: M)
-    
+
     /**
      * Start the actor's message processing loop.
      */
     suspend fun start()
-    
+
     /**
      * Stop the actor and clean up resources.
      */

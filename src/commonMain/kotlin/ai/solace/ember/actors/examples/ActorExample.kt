@@ -6,30 +6,46 @@
  */
 package ai.solace.ember.actors.examples
 
-import ai.solace.ember.actors.*
-import kotlinx.coroutines.*
+import ai.solace.ember.actors.AbstractActor
+import ai.solace.ember.actors.ActorRef
+import ai.solace.ember.actors.ActorSystem
+import ai.solace.ember.actors.AppMessage
+import kotlinx.coroutines.delay
 
 /**
  * Example message types for computation
  */
 internal sealed class ComputeMessage : AppMessage() {
-    data class Add(val a: Double, val b: Double, val replyTo: ActorRef<ComputeResponse>) : ComputeMessage()
-    data class Multiply(val a: Double, val b: Double, val replyTo: ActorRef<ComputeResponse>) : ComputeMessage()
+    data class Add(
+        val a: Double,
+        val b: Double,
+        val replyTo: ActorRef<ComputeResponse>,
+    ) : ComputeMessage()
+
+    data class Multiply(
+        val a: Double,
+        val b: Double,
+        val replyTo: ActorRef<ComputeResponse>,
+    ) : ComputeMessage()
 }
 
 /**
  * Response messages
  */
 internal sealed class ComputeResponse : AppMessage() {
-    data class Result(val value: Double) : ComputeResponse()
-    data class Error(val message: String) : ComputeResponse()
+    data class Result(
+        val value: Double,
+    ) : ComputeResponse()
+
+    data class Error(
+        val message: String,
+    ) : ComputeResponse()
 }
 
 /**
  * Simple calculator actor
  */
 internal class CalculatorActor : AbstractActor<ComputeMessage>() {
-    
     override suspend fun receive(message: ComputeMessage) {
         when (message) {
             is ComputeMessage.Add -> {
@@ -49,7 +65,7 @@ internal class CalculatorActor : AbstractActor<ComputeMessage>() {
  */
 internal class CollectorActor : AbstractActor<ComputeResponse>() {
     private val results = mutableListOf<Double>()
-    
+
     override suspend fun receive(message: ComputeResponse) {
         when (message) {
             is ComputeResponse.Result -> {
@@ -61,7 +77,7 @@ internal class CollectorActor : AbstractActor<ComputeResponse>() {
             }
         }
     }
-    
+
     fun getResults(): List<Double> = results.toList()
 }
 
@@ -70,22 +86,21 @@ internal class CollectorActor : AbstractActor<ComputeResponse>() {
  */
 internal suspend fun actorSystemExample() {
     val system = ActorSystem()
-    
+
     try {
         // Create actors
         val calculator = system.actorOf({ CalculatorActor() }, "calculator")
         val collector = system.actorOf({ CollectorActor() }, "collector")
-        
+
         // Send some computation requests
         calculator.send(ComputeMessage.Add(10.0, 5.0, collector))
         calculator.send(ComputeMessage.Multiply(3.0, 4.0, collector))
         calculator.send(ComputeMessage.Add(1.0, 1.0, collector))
-        
+
         // Wait a bit for processing
         delay(500)
-        
+
         println("Actor system example completed")
-        
     } finally {
         system.shutdown()
     }

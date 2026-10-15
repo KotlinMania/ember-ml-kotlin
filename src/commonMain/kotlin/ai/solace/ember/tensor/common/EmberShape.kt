@@ -6,7 +6,9 @@ package ai.solace.ember.tensor.common
  *
  * @property dimensions The dimensions of the tensor.
  */
-class EmberShape(val dimensions: IntArray) {
+class EmberShape(
+    val dimensions: IntArray,
+) {
     /**
      * The number of dimensions in the shape.
      */
@@ -64,11 +66,11 @@ class EmberShape(val dimensions: IntArray) {
         val thisReversed = dimensions.reversedArray()
         val otherReversed = other.dimensions.reversedArray()
         val maxLength = maxOf(thisReversed.size, otherReversed.size)
-        
+
         for (i in 0 until maxLength) {
             val thisDim = if (i < thisReversed.size) thisReversed[i] else 1
             val otherDim = if (i < otherReversed.size) otherReversed[i] else 1
-            
+
             if (thisDim != otherDim && thisDim != 1 && otherDim != 1) {
                 return false
             }
@@ -87,18 +89,18 @@ class EmberShape(val dimensions: IntArray) {
         if (!isBroadcastableWith(other)) {
             throw IllegalArgumentException("Shapes $this and $other are not compatible for broadcasting")
         }
-        
+
         val thisReversed = dimensions.reversedArray()
         val otherReversed = other.dimensions.reversedArray()
         val maxLength = maxOf(thisReversed.size, otherReversed.size)
         val result = IntArray(maxLength)
-        
+
         for (i in 0 until maxLength) {
             val thisDim = if (i < thisReversed.size) thisReversed[i] else 1
             val otherDim = if (i < otherReversed.size) otherReversed[i] else 1
             result[i] = maxOf(thisDim, otherDim)
         }
-        
+
         return EmberShape(result.reversedArray())
     }
 
@@ -118,8 +120,6 @@ class EmberShape(val dimensions: IntArray) {
          * @return The broadcasted shape.
          * @throws IllegalArgumentException if any shapes are not compatible for broadcasting.
          */
-        fun broadcast(vararg shapes: EmberShape): EmberShape {
-            return shapes.reduce { acc, shape -> acc.broadcastWith(shape) }
-        }
+        fun broadcast(vararg shapes: EmberShape): EmberShape = shapes.reduce { acc, shape -> acc.broadcastWith(shape) }
     }
 }

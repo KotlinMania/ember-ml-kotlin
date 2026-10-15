@@ -4,7 +4,7 @@ import ai.solace.ember.tensor.common.DType
 
 /**
  * Metal tensor implementation for GPU-accelerated tensor operations.
- * 
+ *
  * This class wraps Metal buffers and provides tensor semantics for use with
  * the Metal backend.
  */
@@ -12,9 +12,8 @@ class MetalTensor private constructor(
     val buffer: MetalBuffer,
     val shape: IntArray,
     val dtype: DType,
-    val context: MetalContext
+    val context: MetalContext,
 ) {
-
     /**
      * Gets the number of elements in the tensor.
      */
@@ -41,16 +40,14 @@ class MetalTensor private constructor(
     /**
      * Copies the tensor data to a FloatArray.
      */
-    fun toFloatArray(): FloatArray {
-        return buffer.toFloatArray()
-    }
+    fun toFloatArray(): FloatArray = buffer.toFloatArray()
 
     /**
      * Copies data from a FloatArray to this tensor.
      */
     fun fromFloatArray(data: FloatArray) {
-        require(data.size == size) { 
-            "Data size (${data.size}) must match tensor size ($size)" 
+        require(data.size == size) {
+            "Data size (${data.size}) must match tensor size ($size)"
         }
         buffer.fromFloatArray(data)
     }
@@ -73,8 +70,8 @@ class MetalTensor private constructor(
      */
     fun reshape(newShape: IntArray): MetalTensor {
         val newSize = newShape.fold(1) { acc, dim -> acc * dim }
-        require(newSize == size) { 
-            "New shape size ($newSize) must match current size ($size)" 
+        require(newSize == size) {
+            "New shape size ($newSize) must match current size ($size)"
         }
         return MetalTensor(buffer, newShape, dtype, context)
     }
@@ -82,9 +79,7 @@ class MetalTensor private constructor(
     /**
      * Returns a string representation of the tensor.
      */
-    override fun toString(): String {
-        return "MetalTensor(shape=${shape.contentToString()}, dtype=$dtype, size=$size)"
-    }
+    override fun toString(): String = "MetalTensor(shape=${shape.contentToString()}, dtype=$dtype, size=$size)"
 
     /**
      * Releases the tensor resources.
@@ -96,7 +91,7 @@ class MetalTensor private constructor(
     companion object {
         /**
          * Creates a Metal tensor from data.
-         * 
+         *
          * @param data The tensor data (FloatArray, IntArray, etc.)
          * @param shape The tensor shape
          * @param dtype The tensor data type
@@ -105,24 +100,25 @@ class MetalTensor private constructor(
         fun create(data: Any, shape: IntArray, dtype: DType, context: MetalContext): MetalTensor {
             val size = shape.fold(1) { acc, dim -> acc * dim }
 
-            val floatData = when (data) {
-                is FloatArray -> data
-                is IntArray -> data.map { it.toFloat() }.toFloatArray()
-                is DoubleArray -> data.map { it.toFloat() }.toFloatArray()
-                is Array<*> -> {
-                    val flatArray = flattenArray(data)
-                    when (flatArray.firstOrNull()) {
-                        is Float -> flatArray.map { (it as Float) }.toFloatArray()
-                        is Int -> flatArray.map { (it as Int).toFloat() }.toFloatArray()
-                        is Double -> flatArray.map { (it as Double).toFloat() }.toFloatArray()
-                        else -> throw IllegalArgumentException("Unsupported data type in array")
+            val floatData =
+                when (data) {
+                    is FloatArray -> data
+                    is IntArray -> data.map { it.toFloat() }.toFloatArray()
+                    is DoubleArray -> data.map { it.toFloat() }.toFloatArray()
+                    is Array<*> -> {
+                        val flatArray = flattenArray(data)
+                        when (flatArray.firstOrNull()) {
+                            is Float -> flatArray.map { (it as Float) }.toFloatArray()
+                            is Int -> flatArray.map { (it as Int).toFloat() }.toFloatArray()
+                            is Double -> flatArray.map { (it as Double).toFloat() }.toFloatArray()
+                            else -> throw IllegalArgumentException("Unsupported data type in array")
+                        }
                     }
+                    else -> throw IllegalArgumentException("Unsupported data type: ${data::class}")
                 }
-                else -> throw IllegalArgumentException("Unsupported data type: ${data::class}")
-            }
 
-            require(floatData.size == size) { 
-                "Data size (${floatData.size}) must match tensor size ($size)" 
+            require(floatData.size == size) {
+                "Data size (${floatData.size}) must match tensor size ($size)"
             }
 
             val buffer = context.createBuffer(floatData)

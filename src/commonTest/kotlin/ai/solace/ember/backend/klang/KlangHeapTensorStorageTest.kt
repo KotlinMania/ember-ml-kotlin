@@ -6,7 +6,6 @@ import kotlin.test.assertEquals
 import kotlin.time.measureTime
 
 class KlangHeapTensorStorageTest {
-
     @Test
     fun roundTripFloat32() {
         val data = floatArrayOf(1.0f, -2.5f, 3.75f)
@@ -64,40 +63,48 @@ class KlangHeapTensorStorageTest {
         val data = FloatArray(1024) { it.toFloat() * 0.5f }
         val iterations = 100
 
-        val heapMs = measureTime {
-            val buf = KlangHeapTensorStorage.mallocFloat32(data.size)
-            try {
-                repeat(iterations) {
-                    KlangHeapTensorStorage.writeFloat32(buf, data)
-                    KlangHeapTensorStorage.readFloat32(buf, data.size)
+        val heapMs =
+            measureTime {
+                val buf = KlangHeapTensorStorage.mallocFloat32(data.size)
+                try {
+                    repeat(iterations) {
+                        KlangHeapTensorStorage.writeFloat32(buf, data)
+                        KlangHeapTensorStorage.readFloat32(buf, data.size)
+                    }
+                } finally {
+                    buf.free()
                 }
-            } finally {
-                buf.free()
-            }
-        }.inWholeMilliseconds
+            }.inWholeMilliseconds
 
-        val heapBulkMs = measureTime {
-            val buf = KlangHeapTensorStorage.mallocFloat32(data.size)
-            try {
-                repeat(iterations) {
-                    KlangHeapTensorStorage.writeFloat32Bulk(buf, data)
-                    KlangHeapTensorStorage.readFloat32Bulk(buf, data.size)
+        val heapBulkMs =
+            measureTime {
+                val buf = KlangHeapTensorStorage.mallocFloat32(data.size)
+                try {
+                    repeat(iterations) {
+                        KlangHeapTensorStorage.writeFloat32Bulk(buf, data)
+                        KlangHeapTensorStorage.readFloat32Bulk(buf, data.size)
+                    }
+                } finally {
+                    buf.free()
                 }
-            } finally {
-                buf.free()
-            }
-        }.inWholeMilliseconds
+            }.inWholeMilliseconds
 
-        val arrayMs = measureTime {
-            repeat(iterations) {
-                val arr = FloatArray(data.size)
-                // copy with CFloat32 conversion to mirror per-element rounding
-                for (i in data.indices) arr[i] = io.github.kotlinmania.klang.fp.CFloat32.fromFloat(data[i]).toFloat()
-            }
-        }.inWholeMilliseconds
+        val arrayMs =
+            measureTime {
+                repeat(iterations) {
+                    val arr = FloatArray(data.size)
+                    // copy with CFloat32 conversion to mirror per-element rounding
+                    for (i in data.indices) {
+                        arr[i] =
+                            io.github.kotlinmania.klang.fp.CFloat32
+                                .fromFloat(data[i])
+                                .toFloat()
+                    }
+                }
+            }.inWholeMilliseconds
 
         println(
-            "heap roundtrip ${data.size}x$iterations -> scalar ${heapMs}ms; bulk ${heapBulkMs}ms; array copy ${arrayMs}ms"
+            "heap roundtrip ${data.size}x$iterations -> scalar ${heapMs}ms; bulk ${heapBulkMs}ms; array copy ${arrayMs}ms",
         )
     }
 }

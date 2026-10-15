@@ -27,9 +27,7 @@ object BackendRegistry {
      * @param name The name of the backend.
      * @return The backend implementation, or null if not found.
      */
-    fun getBackend(name: String): Backend? {
-        return backends[name]
-    }
+    fun getBackend(name: String): Backend? = backends[name]
 
     /**
      * Sets the current backend.
@@ -126,6 +124,4 @@ fun isBackendAvailable(name: String): Boolean {
  *
  * @return A list of available backend names.
  */
-fun getAvailableBackends(): List<String> {
-    return BackendRegistry.getAvailableBackends()
-}
+fun getAvailableBackends(): List<String> = BackendRegistry.getAvailableBackends()

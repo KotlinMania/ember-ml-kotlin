@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 class LimbArrayArithmeticTest {
     @Test
-    fun `addition with constant operand yields same results DAG vs eager`() {
+    fun testAdditionWithConstantOperandYieldsSameResultsDagVsEager() {
         val a = LimbEngine(mantissa = intArrayOf(0x0001))
         val b = LimbEngine(mantissa = intArrayOf(0x00F0))
         val addend = LimbEngine(mantissa = intArrayOf(0x0002))
@@ -25,4 +25,3 @@ class LimbArrayArithmeticTest {
         assertEquals(0x00F2, d[1])
     }
 }
-

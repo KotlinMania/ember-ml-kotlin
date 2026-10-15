@@ -4,8 +4,6 @@ import ai.solace.ember.backend.klang.LimbArray
 import ai.solace.ember.backend.klang.LimbEngine
 import io.github.kotlinmania.klang.bitwise.BitShiftConfig
 import io.github.kotlinmania.klang.bitwise.BitShiftMode
-import kotlin.math.abs
-import kotlin.math.min
 import kotlin.random.Random
 import kotlin.time.measureTime
 
@@ -21,9 +19,10 @@ private fun randomEngines(count: Int, seed: Int): List<LimbEngine> {
 }
 
 private inline fun measureMillis(times: Int, block: () -> Unit): Double {
-    val total = measureTime {
-        repeat(times) { block() }
-    }
+    val total =
+        measureTime {
+            repeat(times) { block() }
+        }
     return total.inWholeMilliseconds.toDouble() / times
 }
 
@@ -32,10 +31,15 @@ private fun runSuite(size: Int, bits: Int, iters: Int, seed: Int) {
         val engines = randomEngines(size, seed xor (if (dag) 0xA5A5 else 0x5A5A))
         var ms = 0.0
         BitShiftConfig.withMode(mode) {
-            ms = measureMillis(iters) {
-                val arr = LimbArray.fromList(engines, autoFlushThreshold = Int.MAX_VALUE, dagEnabled = dag)
-                arr.shiftLeft(bits).bitAnd(IntArray(8) { MASK }).shiftRight(bits / 2).flush()
-            }
+            ms =
+                measureMillis(iters) {
+                    val arr = LimbArray.fromList(engines, autoFlushThreshold = Int.MAX_VALUE, dagEnabled = dag)
+                    arr
+                        .shiftLeft(bits)
+                        .bitAnd(IntArray(8) { MASK })
+                        .shiftRight(bits / 2)
+                        .flush()
+                }
         }
         return ms
     }
@@ -53,7 +57,9 @@ private fun runSuite(size: Int, bits: Int, iters: Int, seed: Int) {
             val idx = s.indexOf('.')
             val pad = 3 - (s.length - idx)
             if (pad > 0) s + "0".repeat(pad) else s
-        } else s + ".00"
+        } else {
+            s + ".00"
+        }
     }
 
     val arRatio = if (arEager > 0.0) arDag / arEager else Double.NaN

@@ -1,7 +1,7 @@
 package ai.solace.ember.actors
 
-import ai.solace.ember.tensor.common.EmberTensor
 import ai.solace.ember.tensor.common.EmberShape
+import ai.solace.ember.tensor.common.EmberTensor
 import kotlinx.coroutines.channels.SendChannel
 
 /**
@@ -15,7 +15,7 @@ sealed class TensorMessage
 data class AddTensorMessage(
     val a: EmberTensor,
     val b: EmberTensor,
-    val responseChannel: SendChannel<TensorResponse>? = null
+    val responseChannel: SendChannel<TensorResponse>? = null,
 ) : TensorMessage()
 
 /**
@@ -24,7 +24,7 @@ data class AddTensorMessage(
 data class MultiplyTensorMessage(
     val a: EmberTensor,
     val b: EmberTensor,
-    val responseChannel: SendChannel<TensorResponse>? = null
+    val responseChannel: SendChannel<TensorResponse>? = null,
 ) : TensorMessage()
 
 /**
@@ -33,7 +33,7 @@ data class MultiplyTensorMessage(
 data class MatmulTensorMessage(
     val a: EmberTensor,
     val b: EmberTensor,
-    val responseChannel: SendChannel<TensorResponse>? = null
+    val responseChannel: SendChannel<TensorResponse>? = null,
 ) : TensorMessage()
 
 /**
@@ -42,7 +42,7 @@ data class MatmulTensorMessage(
 data class ReshapeTensorMessage(
     val tensor: EmberTensor,
     val newShape: EmberShape,
-    val responseChannel: SendChannel<TensorResponse>? = null
+    val responseChannel: SendChannel<TensorResponse>? = null,
 ) : TensorMessage()
 
 /**
@@ -50,14 +50,18 @@ data class ReshapeTensorMessage(
  */
 sealed class TensorResponse
 
-data class TensorResultMessage(val result: EmberTensor) : TensorResponse()
-data class TensorErrorMessage(val error: Throwable) : TensorResponse()
+data class TensorResultMessage(
+    val result: EmberTensor,
+) : TensorResponse()
+
+data class TensorErrorMessage(
+    val error: Throwable,
+) : TensorResponse()
 
 /**
  * Actor that handles tensor operations in a non-blocking coroutine-safe way.
  */
 class TensorActor : AbstractActor<TensorMessage>() {
-
     override suspend fun receive(message: TensorMessage) {
         when (message) {
             is AddTensorMessage -> {
@@ -87,8 +91,12 @@ class TensorActor : AbstractActor<TensorMessage>() {
             is ReshapeTensorMessage -> {
                 try {
                     val reshaped = message.tensor.reshape(message.newShape)
-                    val result = if (reshaped is EmberTensor) reshaped 
-                        else throw IllegalStateException("Reshape operation did not return EmberTensor")
+                    val result =
+                        if (reshaped is EmberTensor) {
+                            reshaped
+                        } else {
+                            throw IllegalStateException("Reshape operation did not return EmberTensor")
+                        }
                     message.responseChannel?.send(TensorResultMessage(result))
                 } catch (e: Exception) {
                     message.responseChannel?.send(TensorErrorMessage(e))

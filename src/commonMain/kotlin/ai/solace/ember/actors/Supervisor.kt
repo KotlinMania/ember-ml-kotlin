@@ -14,17 +14,17 @@ sealed class SupervisionStrategy {
      * Restart the failed actor.
      */
     object Restart : SupervisionStrategy()
-    
+
     /**
      * Stop the failed actor.
      */
     object Stop : SupervisionStrategy()
-    
+
     /**
      * Escalate the failure to the parent supervisor.
      */
     object Escalate : SupervisionStrategy()
-    
+
     /**
      * Resume the actor (ignore the failure).
      */
@@ -36,34 +36,33 @@ sealed class SupervisionStrategy {
  */
 abstract class SupervisorActor<M : Message>(
     private val strategy: SupervisionStrategy = SupervisionStrategy.Restart,
-    capacity: Int = kotlinx.coroutines.channels.Channel.UNLIMITED
+    capacity: Int = kotlinx.coroutines.channels.Channel.UNLIMITED,
 ) : AbstractActor<M>(capacity) {
-    
     private val children = mutableMapOf<String, ActorRef<*>>()
-    
+
     /**
      * Create a child actor under this supervisor.
      */
     suspend fun <CM : Any> createChild(
         factory: () -> Actor<CM>,
-        name: String? = null
+        name: String? = null,
     ): ActorRef<CM> {
         val childName = name ?: generateChildName()
-        
+
         val child = factory()
         val ref = ActorRefImpl(child)
         children[childName] = ref
-        
+
         // Start the child actor asynchronously
         try {
             child.start()
         } catch (e: Exception) {
             handleChildFailure(childName, e)
         }
-        
+
         return ref
     }
-    
+
     /**
      * Stop a child actor.
      */
@@ -76,7 +75,7 @@ abstract class SupervisorActor<M : Message>(
             false
         }
     }
-    
+
     /**
      * Handle child actor failures according to the supervision strategy.
      */
@@ -102,7 +101,7 @@ abstract class SupervisorActor<M : Message>(
             }
         }
     }
-    
+
     /**
      * Stop all child actors when the supervisor stops.
      */
@@ -111,11 +110,9 @@ abstract class SupervisorActor<M : Message>(
         children.values.forEach { it.stop() }
         children.clear()
     }
-    
+
     /**
      * Generate a unique name for a child actor.
      */
-    private fun generateChildName(): String {
-        return "child-${kotlin.random.Random.nextLong()}-${kotlin.random.Random.nextInt(1000)}"
-    }
+    private fun generateChildName(): String = "child-${kotlin.random.Random.nextLong()}-${kotlin.random.Random.nextInt(1000)}"
 }

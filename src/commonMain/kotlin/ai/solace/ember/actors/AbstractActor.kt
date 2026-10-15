@@ -6,8 +6,15 @@
  */
 package ai.solace.ember.actors
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Abstract base class for actors providing common functionality.
@@ -16,9 +23,8 @@ import kotlinx.coroutines.channels.Channel
  * @param capacity The capacity of the actor's mailbox channel
  */
 abstract class AbstractActor<M : Any>(
-    capacity: Int = Channel.UNLIMITED
+    capacity: Int = Channel.UNLIMITED,
 ) : Actor<M> {
-
     override val mailbox: Channel<M> = Channel(capacity)
     override val scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
@@ -32,21 +38,22 @@ abstract class AbstractActor<M : Any>(
         if (isRunning) return
 
         isRunning = true
-        job = scope.launch {
-            try {
-                @OptIn(DelicateCoroutinesApi::class)
-                while (isActive && !mailbox.isClosedForSend) {
-                    try {
-                        val message = mailbox.receive()
-                        receive(message)
-                    } catch (e: Exception) {
-                        handleError(e)
+        job =
+            scope.launch {
+                try {
+                    @OptIn(DelicateCoroutinesApi::class)
+                    while (isActive && !mailbox.isClosedForSend) {
+                        try {
+                            val message = mailbox.receive()
+                            receive(message)
+                        } catch (e: Exception) {
+                            handleError(e)
+                        }
                     }
+                } finally {
+                    cleanup()
                 }
-            } finally {
-                cleanup()
             }
-        }
     }
 
     /**
@@ -68,14 +75,13 @@ abstract class AbstractActor<M : Any>(
      * @param message The message to send
      * @return true if the message was sent successfully, false otherwise
      */
-    suspend fun send(message: M): Boolean {
-        return try {
+    suspend fun send(message: M): Boolean =
+        try {
             mailbox.send(message)
             true
         } catch (_: Exception) {
             false
         }
-    }
 
     /**
      * Handle errors that occur during message processing.

@@ -2,13 +2,12 @@ package ai.solace.ember.backend.metal
 
 /**
  * Metal kernel source code for tensor operations.
- * 
+ *
  * This object contains the Metal Shading Language (MSL) source code for various
  * tensor operations. In a full implementation, these would be compiled into
  * Metal compute pipeline states.
  */
 object MetalKernelSource {
-    
     /**
      * Metal kernel for element-wise addition.
      */
@@ -23,7 +22,7 @@ object MetalKernelSource {
             result[index] = a[index] + b[index];
         }
     """
-    
+
     /**
      * Metal kernel for element-wise subtraction.
      */
@@ -38,7 +37,7 @@ object MetalKernelSource {
             result[index] = a[index] - b[index];
         }
     """
-    
+
     /**
      * Metal kernel for element-wise multiplication.
      */
@@ -53,7 +52,7 @@ object MetalKernelSource {
             result[index] = a[index] * b[index];
         }
     """
-    
+
     /**
      * Metal kernel for element-wise division.
      */
@@ -68,7 +67,7 @@ object MetalKernelSource {
             result[index] = a[index] / b[index];
         }
     """
-    
+
     /**
      * Metal kernel for matrix multiplication.
      */
@@ -97,7 +96,7 @@ object MetalKernelSource {
             }
         }
     """
-    
+
     /**
      * Metal kernel for transpose operation.
      */
@@ -120,10 +119,10 @@ object MetalKernelSource {
             }
         }
     """
-    
+
     /**
      * Metal kernel for SVD using power method.
-     * 
+     *
      * This is based on the implementation in mlxtests/metal_kernel_method/svd_metal.py,
      * adapted for Metal Shading Language.
      */
@@ -234,7 +233,7 @@ object MetalKernelSource {
             }
         }
     """
-    
+
     /**
      * Metal kernel for 1D SVD using power method.
      */
@@ -311,7 +310,7 @@ object MetalKernelSource {
             }
         }
     """
-    
+
     /**
      * Additional utility kernels.
      */

@@ -1,19 +1,22 @@
 package ai.solace.ember.integration
 
-import ai.solace.ember.nn.layers.Dense
-import ai.solace.ember.nn.activations.ReLU
-import ai.solace.ember.tensor.common.EmberTensor
-import ai.solace.ember.tensor.common.EmberShape
-import ai.solace.ember.tensor.common.DType
 import ai.solace.ember.backend.BackendRegistry
 import ai.solace.ember.backend.initializePlatformBackends
-import kotlin.test.*
+import ai.solace.ember.nn.activations.ReLU
+import ai.solace.ember.nn.layers.Dense
+import ai.solace.ember.tensor.common.EmberShape
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 /**
  * Integration tests for the architecture components.
  */
 class ArchitectureIntegrationTest {
-
     @BeforeTest
     fun setup() {
         initializePlatformBackends()

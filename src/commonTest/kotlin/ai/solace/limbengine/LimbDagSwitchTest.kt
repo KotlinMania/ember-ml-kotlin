@@ -7,12 +7,22 @@ import kotlin.test.assertTrue
 
 class LimbDagSwitchTest {
     @Test
-    fun `engine dag vs eager equivalence`() {
+    fun testEngineDagVsEagerEquivalence() {
         val aDag = LimbEngine(mantissa = intArrayOf(0x1234), dagEnabled = true)
         val aEager = LimbEngine(mantissa = intArrayOf(0x1234), dagEnabled = false)
 
-        aDag.shiftLeft(4).bitAnd(intArrayOf(0x0FF0)).shiftRight(2).bitOr(intArrayOf(0x0003)).flush()
-        aEager.shiftLeft(4).bitAnd(intArrayOf(0x0FF0)).shiftRight(2).bitOr(intArrayOf(0x0003)).flush()
+        aDag
+            .shiftLeft(4)
+            .bitAnd(intArrayOf(0x0FF0))
+            .shiftRight(2)
+            .bitOr(intArrayOf(0x0003))
+            .flush()
+        aEager
+            .shiftLeft(4)
+            .bitAnd(intArrayOf(0x0FF0))
+            .shiftRight(2)
+            .bitOr(intArrayOf(0x0003))
+            .flush()
 
         val dagVal = aDag.mantissaLimbs()[0]
         val eagerVal = aEager.mantissaLimbs()[0]
@@ -30,20 +40,32 @@ class LimbDagSwitchTest {
     }
 
     @Test
-    fun `array dag vs eager equivalence`() {
-        val dag = LimbArray.of(
-            LimbEngine(mantissa = intArrayOf(0x0001)),
-            LimbEngine(mantissa = intArrayOf(0x00F0)),
-            dagEnabled = true,
-        )
-        val eager = LimbArray.of(
-            LimbEngine(mantissa = intArrayOf(0x0001)),
-            LimbEngine(mantissa = intArrayOf(0x00F0)),
-            dagEnabled = false,
-        )
+    fun testArrayDagVsEagerEquivalence() {
+        val dag =
+            LimbArray.of(
+                LimbEngine(mantissa = intArrayOf(0x0001)),
+                LimbEngine(mantissa = intArrayOf(0x00F0)),
+                dagEnabled = true,
+            )
+        val eager =
+            LimbArray.of(
+                LimbEngine(mantissa = intArrayOf(0x0001)),
+                LimbEngine(mantissa = intArrayOf(0x00F0)),
+                dagEnabled = false,
+            )
 
-        dag.shiftLeft(4).bitAnd(intArrayOf(0x0FF0)).shiftRight(2).bitOr(intArrayOf(0x0003)).flush()
-        eager.shiftLeft(4).bitAnd(intArrayOf(0x0FF0)).shiftRight(2).bitOr(intArrayOf(0x0003)).flush()
+        dag
+            .shiftLeft(4)
+            .bitAnd(intArrayOf(0x0FF0))
+            .shiftRight(2)
+            .bitOr(intArrayOf(0x0003))
+            .flush()
+        eager
+            .shiftLeft(4)
+            .bitAnd(intArrayOf(0x0FF0))
+            .shiftRight(2)
+            .bitOr(intArrayOf(0x0003))
+            .flush()
 
         val dVals = dag.toList().map { it.mantissaLimbs()[0] }
         val eVals = eager.toList().map { it.mantissaLimbs()[0] }

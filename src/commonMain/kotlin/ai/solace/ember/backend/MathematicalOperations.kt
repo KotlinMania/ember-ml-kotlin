@@ -1,23 +1,25 @@
 package ai.solace.ember.backend
 
-import ai.solace.ember.tensor.common.DType
 import ai.solace.ember.backend.storage.TensorStorage
-import kotlin.math.*
+import ai.solace.ember.tensor.common.DType
+import kotlin.math.ln
+import kotlin.math.pow
 
 /**
  * Mathematical functions for the DefaultCpuBackend.
- * 
+ *
  * This class provides element-wise mathematical operations that were missing
- * in the original implementation, including trigonometric, exponential, 
+ * in the original implementation, including trigonometric, exponential,
  * and other mathematical functions.
  */
-class MathematicalOperations(private val backend: DefaultCpuBackend) {
-    
+class MathematicalOperations(
+    private val backend: DefaultCpuBackend,
+) {
     /**
      * Applies sine function element-wise.
      */
-    fun sin(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun sin(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.sin(value)
                 is Double -> kotlin.math.sin(value)
@@ -27,13 +29,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Sin operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies cosine function element-wise.
      */
-    fun cos(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun cos(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.cos(value)
                 is Double -> kotlin.math.cos(value)
@@ -43,13 +44,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Cos operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies tangent function element-wise.
      */
-    fun tan(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun tan(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.tan(value)
                 is Double -> kotlin.math.tan(value)
@@ -59,13 +59,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Tan operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies exponential function element-wise.
      */
-    fun exp(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun exp(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.exp(value)
                 is Double -> kotlin.math.exp(value)
@@ -75,13 +74,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Exp operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies natural logarithm function element-wise.
      */
-    fun log(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun log(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> {
                     if (value <= 0f) throw ArithmeticException("Log of non-positive number: $value")
@@ -106,13 +104,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Log operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies square root function element-wise.
      */
-    fun sqrt(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun sqrt(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> {
                     if (value < 0f) throw ArithmeticException("Square root of negative number: $value")
@@ -134,13 +131,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Sqrt operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies power function element-wise.
      */
-    fun pow(tensor: Any, exponent: Double): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun pow(tensor: Any, exponent: Double): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> value.pow(exponent.toFloat())
                 is Double -> value.pow(exponent)
@@ -150,13 +146,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Pow operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies absolute value function element-wise.
      */
-    fun abs(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun abs(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.abs(value)
                 is Double -> kotlin.math.abs(value)
@@ -167,13 +162,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Abs operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies base-10 logarithm function element-wise.
      */
-    fun log10(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun log10(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> {
                     if (value <= 0f) throw ArithmeticException("Log10 of non-positive number: $value")
@@ -198,13 +192,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Log10 operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies base-2 logarithm function element-wise.
      */
-    fun log2(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun log2(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> {
                     if (value <= 0f) throw ArithmeticException("Log2 of non-positive number: $value")
@@ -229,13 +222,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Log2 operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies hyperbolic sine function element-wise.
      */
-    fun sinh(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun sinh(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.sinh(value)
                 is Double -> kotlin.math.sinh(value)
@@ -245,13 +237,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Sinh operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies hyperbolic cosine function element-wise.
      */
-    fun cosh(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun cosh(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.cosh(value)
                 is Double -> kotlin.math.cosh(value)
@@ -261,13 +252,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Cosh operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies floor function element-wise.
      */
-    fun floor(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun floor(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.floor(value)
                 is Double -> kotlin.math.floor(value)
@@ -277,13 +267,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Floor operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies ceiling function element-wise.
      */
-    fun ceil(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun ceil(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.ceil(value)
                 is Double -> kotlin.math.ceil(value)
@@ -293,13 +282,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Ceil operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies modulo operation element-wise.
      */
-    fun mod(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryMathFunction(tensor1, tensor2) { a, b ->
+    fun mod(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryMathFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a % b
                 a is Double && b is Double -> a % b
@@ -314,8 +302,7 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Applies clipping function element-wise.
      */
@@ -323,7 +310,7 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
         if (minVal > maxVal) {
             throw IllegalArgumentException("minVal ($minVal) must be <= maxVal ($maxVal)")
         }
-        
+
         return applyUnaryMathFunction(tensor) { value ->
             val doubleValue = convertToDouble(value)
             when {
@@ -333,12 +320,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
             }
         }
     }
-    
+
     /**
      * Applies negation function element-wise.
      */
-    fun negative(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun negative(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> -value
                 is Double -> -value
@@ -349,13 +336,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Negative operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Applies sign function element-wise.
      */
-    fun sign(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun sign(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> kotlin.math.sign(value)
                 is Double -> kotlin.math.sign(value)
@@ -366,65 +352,66 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 else -> throw IllegalArgumentException("Sign operation not supported for type: ${value::class.simpleName}")
             }
         }
-    }
-    
+
     /**
      * Computes gradient along specified axis.
      */
     fun gradient(tensor: Any, axis: Int? = null): DefaultCpuBackend.DefaultCpuTensor {
         val t = tensor as DefaultCpuBackend.DefaultCpuTensor
-        
+
         // For now, implement 1D gradient (discrete difference)
         if (axis != null && (axis < 0 || axis >= t.shape.size)) {
             throw IllegalArgumentException("Axis $axis is out of bounds for tensor with ${t.shape.size} dimensions")
         }
-        
+
         val gradAxis = axis ?: 0
         if (t.shape[gradAxis] < 2) {
             throw IllegalArgumentException("Cannot compute gradient along axis with size < 2")
         }
-        
-        val outputDType = when (t.dtype) {
-            DType.BOOL, DType.UINT8, DType.INT32, DType.INT64 -> DType.FLOAT64
-            DType.FLOAT32 -> DType.FLOAT32
-            DType.FLOAT64 -> DType.FLOAT64
-        }
-        
+
+        val outputDType =
+            when (t.dtype) {
+                DType.BOOL, DType.UINT8, DType.INT32, DType.INT64 -> DType.FLOAT64
+                DType.FLOAT32 -> DType.FLOAT32
+                DType.FLOAT64 -> DType.FLOAT64
+            }
+
         val resultStorage = TensorStorage.createOptimalStorage(outputDType, t.size)
-        
+
         // Simple 1D gradient implementation (forward/backward differences)
         for (i in 0 until t.size) {
-            val gradient = when {
-                i == 0 -> {
-                    // Forward difference
-                    val curr = convertToDouble(getStorageValue(t.storage, i))
-                    val next = convertToDouble(getStorageValue(t.storage, i + 1))
-                    next - curr
+            val gradient =
+                when {
+                    i == 0 -> {
+                        // Forward difference
+                        val curr = convertToDouble(getStorageValue(t.storage, i))
+                        val next = convertToDouble(getStorageValue(t.storage, i + 1))
+                        next - curr
+                    }
+                    i == t.size - 1 -> {
+                        // Backward difference
+                        val curr = convertToDouble(getStorageValue(t.storage, i))
+                        val prev = convertToDouble(getStorageValue(t.storage, i - 1))
+                        curr - prev
+                    }
+                    else -> {
+                        // Central difference
+                        val prev = convertToDouble(getStorageValue(t.storage, i - 1))
+                        val next = convertToDouble(getStorageValue(t.storage, i + 1))
+                        (next - prev) / 2.0
+                    }
                 }
-                i == t.size - 1 -> {
-                    // Backward difference
-                    val curr = convertToDouble(getStorageValue(t.storage, i))
-                    val prev = convertToDouble(getStorageValue(t.storage, i - 1))
-                    curr - prev
-                }
-                else -> {
-                    // Central difference
-                    val prev = convertToDouble(getStorageValue(t.storage, i - 1))
-                    val next = convertToDouble(getStorageValue(t.storage, i + 1))
-                    (next - prev) / 2.0
-                }
-            }
             setStorageValue(resultStorage, i, gradient, outputDType)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(resultStorage, t.shape, t.device)
     }
-    
+
     /**
      * Element-wise greater than comparison.
      */
-    fun greaterThan(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun greaterThan(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a > b
                 a is Double && b is Double -> a > b
@@ -440,13 +427,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise less than comparison.
      */
-    fun lessThan(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun lessThan(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a < b
                 a is Double && b is Double -> a < b
@@ -462,13 +448,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise equality comparison.
      */
-    fun equal(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun equal(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a == b
                 a is Double && b is Double -> a == b
@@ -484,13 +469,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise not equal comparison.
      */
-    fun notEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun notEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a != b
                 a is Double && b is Double -> a != b
@@ -505,13 +489,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise less than or equal comparison.
      */
-    fun lessEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun lessEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a <= b
                 a is Double && b is Double -> a <= b
@@ -526,13 +509,12 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise greater than or equal comparison.
      */
-    fun greaterEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun greaterEqual(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             when {
                 a is Float && b is Float -> a >= b
                 a is Double && b is Double -> a >= b
@@ -547,77 +529,70 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
                 }
             }
         }
-    }
-    
+
     /**
      * Element-wise logical AND operation.
      */
-    fun logicalAnd(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun logicalAnd(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             convertToBoolean(a) && convertToBoolean(b)
         }
-    }
-    
+
     /**
      * Element-wise logical OR operation.
      */
-    fun logicalOr(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun logicalOr(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             convertToBoolean(a) || convertToBoolean(b)
         }
-    }
-    
+
     /**
      * Element-wise logical NOT operation.
      */
-    fun logicalNot(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun logicalNot(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             !convertToBoolean(value)
         }
-    }
-    
+
     /**
      * Element-wise logical XOR operation.
      */
-    fun logicalXor(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun logicalXor(tensor1: Any, tensor2: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             val aBool = convertToBoolean(a)
             val bBool = convertToBoolean(b)
             (aBool && !bBool) || (!aBool && bBool)
         }
-    }
-    
+
     /**
      * Check if values are NaN (Not a Number).
      */
-    fun isNaN(tensor: Any): DefaultCpuBackend.DefaultCpuTensor {
-        return applyUnaryMathFunction(tensor) { value ->
+    fun isNaN(tensor: Any): DefaultCpuBackend.DefaultCpuTensor =
+        applyUnaryMathFunction(tensor) { value ->
             when (value) {
                 is Float -> value.isNaN()
                 is Double -> value.isNaN()
                 else -> false // Non-floating point values cannot be NaN
             }
         }
-    }
-    
+
     /**
      * Element-wise close comparison within tolerance.
      */
-    fun isClose(tensor1: Any, tensor2: Any, rtol: Double = 1e-05, atol: Double = 1e-08): DefaultCpuBackend.DefaultCpuTensor {
-        return applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
+    fun isClose(tensor1: Any, tensor2: Any, rtol: Double = 1e-05, atol: Double = 1e-08): DefaultCpuBackend.DefaultCpuTensor =
+        applyBinaryComparisonFunction(tensor1, tensor2) { a, b ->
             val aVal = convertToDouble(a)
             val bVal = convertToDouble(b)
             val diff = kotlin.math.abs(aVal - bVal)
             diff <= (atol + rtol * kotlin.math.abs(bVal))
         }
-    }
-    
+
     /**
      * Test whether all array elements along given axes evaluate to True.
      */
     fun allClose(tensor1: Any, tensor2: Any, rtol: Double = 1e-05, atol: Double = 1e-08): Boolean {
         val closeResultTensor = isClose(tensor1, tensor2, rtol, atol)
-        
+
         // Check if all elements are true
         for (i in 0 until closeResultTensor.size) {
             val value = getStorageValue(closeResultTensor.storage, i)
@@ -627,7 +602,7 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
         }
         return true
     }
-    
+
     /**
      * Select elements from tensors based on condition.
      */
@@ -635,109 +610,113 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
         val condTensor = condition as DefaultCpuBackend.DefaultCpuTensor
         val xTensor = x as DefaultCpuBackend.DefaultCpuTensor
         val yTensor = y as DefaultCpuBackend.DefaultCpuTensor
-        
+
         if (!condTensor.shape.contentEquals(xTensor.shape) || !condTensor.shape.contentEquals(yTensor.shape)) {
             throw IllegalArgumentException("All tensors must have the same shape")
         }
-        
+
         // Determine output dtype based on x and y tensors
-        val outputDType = when {
-            xTensor.dtype == yTensor.dtype -> xTensor.dtype
-            (xTensor.dtype == DType.FLOAT64 || yTensor.dtype == DType.FLOAT64) -> DType.FLOAT64
-            (xTensor.dtype == DType.FLOAT32 || yTensor.dtype == DType.FLOAT32) -> DType.FLOAT32
-            (xTensor.dtype == DType.INT64 || yTensor.dtype == DType.INT64) -> DType.INT64
-            else -> DType.INT32
-        }
-        
+        val outputDType =
+            when {
+                xTensor.dtype == yTensor.dtype -> xTensor.dtype
+                (xTensor.dtype == DType.FLOAT64 || yTensor.dtype == DType.FLOAT64) -> DType.FLOAT64
+                (xTensor.dtype == DType.FLOAT32 || yTensor.dtype == DType.FLOAT32) -> DType.FLOAT32
+                (xTensor.dtype == DType.INT64 || yTensor.dtype == DType.INT64) -> DType.INT64
+                else -> DType.INT32
+            }
+
         val resultStorage = TensorStorage.createOptimalStorage(outputDType, condTensor.size)
-        
+
         for (i in 0 until condTensor.size) {
             val condValue = getStorageValue(condTensor.storage, i)
-            val selectedValue = if (convertToBoolean(condValue)) {
-                getStorageValue(xTensor.storage, i)
-            } else {
-                getStorageValue(yTensor.storage, i)
-            }
+            val selectedValue =
+                if (convertToBoolean(condValue)) {
+                    getStorageValue(xTensor.storage, i)
+                } else {
+                    getStorageValue(yTensor.storage, i)
+                }
             setStorageValue(resultStorage, i, selectedValue, outputDType)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(resultStorage, condTensor.shape, condTensor.device)
     }
-    
+
     // Helper functions
-    
+
     private fun applyUnaryMathFunction(tensor: Any, operation: (Any) -> Any): DefaultCpuBackend.DefaultCpuTensor {
         val t = tensor as DefaultCpuBackend.DefaultCpuTensor
-        
+
         // Determine output data type (usually promote to float/double for math operations)
-        val outputDType = when (t.dtype) {
-            DType.BOOL, DType.UINT8, DType.INT32 -> DType.FLOAT64
-            DType.INT64 -> DType.FLOAT64
-            DType.FLOAT32 -> DType.FLOAT32
-            DType.FLOAT64 -> DType.FLOAT64
-        }
-        
+        val outputDType =
+            when (t.dtype) {
+                DType.BOOL, DType.UINT8, DType.INT32 -> DType.FLOAT64
+                DType.INT64 -> DType.FLOAT64
+                DType.FLOAT32 -> DType.FLOAT32
+                DType.FLOAT64 -> DType.FLOAT64
+            }
+
         val resultStorage = TensorStorage.createOptimalStorage(outputDType, t.size)
-        
+
         for (i in 0 until t.size) {
             val inputValue = getStorageValue(t.storage, i)
             val outputValue = operation(inputValue)
             setStorageValue(resultStorage, i, outputValue, outputDType)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(resultStorage, t.shape, t.device)
     }
-    
+
     private fun applyBinaryMathFunction(tensor1: Any, tensor2: Any, operation: (Any, Any) -> Any): DefaultCpuBackend.DefaultCpuTensor {
         val t1 = tensor1 as DefaultCpuBackend.DefaultCpuTensor
         val t2 = tensor2 as DefaultCpuBackend.DefaultCpuTensor
-        
+
         if (!t1.shape.contentEquals(t2.shape)) {
             throw IllegalArgumentException("Shape mismatch: ${t1.shape.contentToString()} vs ${t2.shape.contentToString()}")
         }
-        
+
         // Determine output dtype based on input dtypes
-        val outputDType = when {
-            t1.dtype == DType.FLOAT64 || t2.dtype == DType.FLOAT64 -> DType.FLOAT64
-            t1.dtype == DType.FLOAT32 || t2.dtype == DType.FLOAT32 -> DType.FLOAT32
-            t1.dtype == DType.INT64 || t2.dtype == DType.INT64 -> DType.INT64
-            else -> DType.INT32
-        }
-        
+        val outputDType =
+            when {
+                t1.dtype == DType.FLOAT64 || t2.dtype == DType.FLOAT64 -> DType.FLOAT64
+                t1.dtype == DType.FLOAT32 || t2.dtype == DType.FLOAT32 -> DType.FLOAT32
+                t1.dtype == DType.INT64 || t2.dtype == DType.INT64 -> DType.INT64
+                else -> DType.INT32
+            }
+
         val resultStorage = TensorStorage.createOptimalStorage(outputDType, t1.size)
-        
+
         for (i in 0 until t1.size) {
             val value1 = getStorageValue(t1.storage, i)
             val value2 = getStorageValue(t2.storage, i)
             val result = operation(value1, value2)
             setStorageValue(resultStorage, i, result, outputDType)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(resultStorage, t1.shape, t1.device)
     }
-    
+
     private fun applyBinaryComparisonFunction(tensor1: Any, tensor2: Any, operation: (Any, Any) -> Boolean): DefaultCpuBackend.DefaultCpuTensor {
         val t1 = tensor1 as DefaultCpuBackend.DefaultCpuTensor
         val t2 = tensor2 as DefaultCpuBackend.DefaultCpuTensor
-        
+
         if (!t1.shape.contentEquals(t2.shape)) {
             throw IllegalArgumentException("Shape mismatch: ${t1.shape.contentToString()} vs ${t2.shape.contentToString()}")
         }
-        
+
         val resultStorage = TensorStorage.createOptimalStorage(DType.BOOL, t1.size)
-        
+
         for (i in 0 until t1.size) {
             val value1 = getStorageValue(t1.storage, i)
             val value2 = getStorageValue(t2.storage, i)
             val result = operation(value1, value2)
             setStorageValue(resultStorage, i, result, DType.BOOL)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(resultStorage, t1.shape, t1.device)
     }
-    
-    private fun getStorageValue(storage: TensorStorage, index: Int): Any {
-        return when (storage) {
+
+    private fun getStorageValue(storage: TensorStorage, index: Int): Any =
+        when (storage) {
             is TensorStorage.PackedBooleanStorage -> storage.get(index)
             is TensorStorage.NativeUByteStorage -> storage.get(index)
             is TensorStorage.NativeIntStorage -> storage.get(index)
@@ -745,8 +724,7 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
             is TensorStorage.NativeFloatStorage -> storage.get(index)
             is TensorStorage.NativeDoubleStorage -> storage.get(index)
         }
-    }
-    
+
     private fun setStorageValue(storage: TensorStorage, index: Int, value: Any, dtype: DType) {
         when (storage) {
             is TensorStorage.PackedBooleanStorage -> {
@@ -769,52 +747,46 @@ class MathematicalOperations(private val backend: DefaultCpuBackend) {
             }
         }
     }
-    
-    private fun convertToBoolean(value: Any): Boolean {
-        return when (value) {
+
+    private fun convertToBoolean(value: Any): Boolean =
+        when (value) {
             is Boolean -> value
             is Number -> value.toDouble() != 0.0
             else -> false
         }
-    }
-    
-    private fun convertToUByte(value: Any): UByte {
-        return when (value) {
+
+    private fun convertToUByte(value: Any): UByte =
+        when (value) {
             is Number -> value.toInt().coerceIn(0, 255).toUByte()
             is Boolean -> if (value) 1u else 0u
             else -> 0u
         }
-    }
-    
-    private fun convertToInt(value: Any): Int {
-        return when (value) {
+
+    private fun convertToInt(value: Any): Int =
+        when (value) {
             is Number -> value.toInt()
             is Boolean -> if (value) 1 else 0
             else -> 0
         }
-    }
-    
-    private fun convertToLong(value: Any): Long {
-        return when (value) {
+
+    private fun convertToLong(value: Any): Long =
+        when (value) {
             is Number -> value.toLong()
             is Boolean -> if (value) 1L else 0L
             else -> 0L
         }
-    }
-    
-    private fun convertToFloat(value: Any): Float {
-        return when (value) {
+
+    private fun convertToFloat(value: Any): Float =
+        when (value) {
             is Number -> value.toFloat()
             is Boolean -> if (value) 1f else 0f
             else -> 0f
         }
-    }
-    
-    private fun convertToDouble(value: Any): Double {
-        return when (value) {
+
+    private fun convertToDouble(value: Any): Double =
+        when (value) {
             is Number -> value.toDouble()
             is Boolean -> if (value) 1.0 else 0.0
             else -> 0.0
         }
-    }
 }

@@ -54,53 +54,57 @@ class DefaultCpuBackend : Backend {
 
     override fun getTensorDevice(tensor: Any): String = asTensor(tensor).device
 
-    override fun add(a: Any, b: Any): DefaultCpuTensor = binaryTensorOp(a, b) { left, right ->
-        when (left) {
-            is Boolean -> left || right.toBooleanValue()
-            is UByte -> (left.toInt() + right.toIntValue()).coerceIn(0, 255).toUByte()
-            is Int -> left + right.toIntValue()
-            is Long -> left + right.toLongValue()
-            is Float -> left + right.toFloatValue()
-            is Double -> left + right.toDoubleValue()
-            else -> unsupportedValue(left)
+    override fun add(a: Any, b: Any): DefaultCpuTensor =
+        binaryTensorOp(a, b) { left, right ->
+            when (left) {
+                is Boolean -> left || right.toBooleanValue()
+                is UByte -> (left.toInt() + right.toIntValue()).coerceIn(0, 255).toUByte()
+                is Int -> left + right.toIntValue()
+                is Long -> left + right.toLongValue()
+                is Float -> left + right.toFloatValue()
+                is Double -> left + right.toDoubleValue()
+                else -> unsupportedValue(left)
+            }
         }
-    }
 
-    override fun subtract(a: Any, b: Any): DefaultCpuTensor = binaryTensorOp(a, b) { left, right ->
-        when (left) {
-            is Boolean -> left && !right.toBooleanValue()
-            is UByte -> (left.toInt() - right.toIntValue()).coerceIn(0, 255).toUByte()
-            is Int -> left - right.toIntValue()
-            is Long -> left - right.toLongValue()
-            is Float -> left - right.toFloatValue()
-            is Double -> left - right.toDoubleValue()
-            else -> unsupportedValue(left)
+    override fun subtract(a: Any, b: Any): DefaultCpuTensor =
+        binaryTensorOp(a, b) { left, right ->
+            when (left) {
+                is Boolean -> left && !right.toBooleanValue()
+                is UByte -> (left.toInt() - right.toIntValue()).coerceIn(0, 255).toUByte()
+                is Int -> left - right.toIntValue()
+                is Long -> left - right.toLongValue()
+                is Float -> left - right.toFloatValue()
+                is Double -> left - right.toDoubleValue()
+                else -> unsupportedValue(left)
+            }
         }
-    }
 
-    override fun multiply(a: Any, b: Any): DefaultCpuTensor = binaryTensorOp(a, b) { left, right ->
-        when (left) {
-            is Boolean -> left && right.toBooleanValue()
-            is UByte -> (left.toInt() * right.toIntValue()).coerceIn(0, 255).toUByte()
-            is Int -> left * right.toIntValue()
-            is Long -> left * right.toLongValue()
-            is Float -> left * right.toFloatValue()
-            is Double -> left * right.toDoubleValue()
-            else -> unsupportedValue(left)
+    override fun multiply(a: Any, b: Any): DefaultCpuTensor =
+        binaryTensorOp(a, b) { left, right ->
+            when (left) {
+                is Boolean -> left && right.toBooleanValue()
+                is UByte -> (left.toInt() * right.toIntValue()).coerceIn(0, 255).toUByte()
+                is Int -> left * right.toIntValue()
+                is Long -> left * right.toLongValue()
+                is Float -> left * right.toFloatValue()
+                is Double -> left * right.toDoubleValue()
+                else -> unsupportedValue(left)
+            }
         }
-    }
 
-    override fun divide(a: Any, b: Any): DefaultCpuTensor = binaryTensorOp(a, b) { left, right ->
-        when (left) {
-            is Boolean -> left
-            is UByte -> (left.toInt() / right.toIntValue().requireNonZero()).coerceIn(0, 255).toUByte()
-            is Int -> left / right.toIntValue().requireNonZero()
-            is Long -> left / right.toLongValue().requireNonZero()
-            is Float -> left / right.toFloatValue().requireNonZero()
-            is Double -> left / right.toDoubleValue().requireNonZero()
-            else -> unsupportedValue(left)
+    override fun divide(a: Any, b: Any): DefaultCpuTensor =
+        binaryTensorOp(a, b) { left, right ->
+            when (left) {
+                is Boolean -> left
+                is UByte -> (left.toInt() / right.toIntValue().requireNonZero()).coerceIn(0, 255).toUByte()
+                is Int -> left / right.toIntValue().requireNonZero()
+                is Long -> left / right.toLongValue().requireNonZero()
+                is Float -> left / right.toFloatValue().requireNonZero()
+                is Double -> left / right.toDoubleValue().requireNonZero()
+                else -> unsupportedValue(left)
+            }
         }
-    }
 
     override fun matmul(a: Any, b: Any): DefaultCpuTensor =
         linalgOps.matmul(a, b)
@@ -162,45 +166,71 @@ class DefaultCpuBackend : Backend {
     }
 
     fun sin(tensor: Any): DefaultCpuTensor = mathOps.sin(tensor)
+
     fun cos(tensor: Any): DefaultCpuTensor = mathOps.cos(tensor)
+
     fun exp(tensor: Any): DefaultCpuTensor = mathOps.exp(tensor)
+
     fun log(tensor: Any): DefaultCpuTensor = mathOps.log(tensor)
+
     fun sqrt(tensor: Any): DefaultCpuTensor = mathOps.sqrt(tensor)
+
     fun pow(tensor: Any, exponent: Any): DefaultCpuTensor = mathOps.pow(tensor, exponent.toDoubleValue())
+
     fun abs(tensor: Any): DefaultCpuTensor = mathOps.abs(tensor)
+
     fun greaterThan(a: Any, b: Any): DefaultCpuTensor = mathOps.greaterThan(a, b)
+
     fun lessThan(a: Any, b: Any): DefaultCpuTensor = mathOps.lessThan(a, b)
+
     fun equal(a: Any, b: Any): DefaultCpuTensor = mathOps.equal(a, b)
 
     override fun leftShift(x: Any, shifts: Any): Any = integerTensorOp(x) { it shl shiftValue(shifts) }
+
     override fun rightShift(x: Any, shifts: Any): Any = integerTensorOp(x) { it shr shiftValue(shifts) }
-    override fun rotateLeft(x: Any, shifts: Any, bitWidth: Int): Any = integerTensorOp(x) { value ->
-        val shift = shiftValue(shifts).floorMod(bitWidth)
-        val mask = if (bitWidth >= Long.SIZE_BITS) -1L else (1L shl bitWidth) - 1L
-        val clipped = value and mask
-        ((clipped shl shift) or (clipped ushr (bitWidth - shift))) and mask
-    }
-    override fun rotateRight(x: Any, shifts: Any, bitWidth: Int): Any = integerTensorOp(x) { value ->
-        val shift = shiftValue(shifts).floorMod(bitWidth)
-        val mask = if (bitWidth >= Long.SIZE_BITS) -1L else (1L shl bitWidth) - 1L
-        val clipped = value and mask
-        ((clipped ushr shift) or (clipped shl (bitWidth - shift))) and mask
-    }
+
+    override fun rotateLeft(x: Any, shifts: Any, bitWidth: Int): Any =
+        integerTensorOp(x) { value ->
+            val shift = shiftValue(shifts).floorMod(bitWidth)
+            val mask = if (bitWidth >= Long.SIZE_BITS) -1L else (1L shl bitWidth) - 1L
+            val clipped = value and mask
+            ((clipped shl shift) or (clipped ushr (bitWidth - shift))) and mask
+        }
+
+    override fun rotateRight(x: Any, shifts: Any, bitWidth: Int): Any =
+        integerTensorOp(x) { value ->
+            val shift = shiftValue(shifts).floorMod(bitWidth)
+            val mask = if (bitWidth >= Long.SIZE_BITS) -1L else (1L shl bitWidth) - 1L
+            val clipped = value and mask
+            ((clipped ushr shift) or (clipped shl (bitWidth - shift))) and mask
+        }
+
     override fun countOnes(x: Any): Any = integerTensorOp(x, DType.INT32) { it.countOneBits().toLong() }
-    override fun countZeros(x: Any): Any = integerTensorOp(x, DType.INT32) {
-        (Long.SIZE_BITS - it.countOneBits()).toLong()
-    }
-    override fun getBit(x: Any, position: Any): Any = integerTensorOp(x, DType.INT32) {
-        ((it ushr shiftValue(position)) and 1L)
-    }
-    override fun setBit(x: Any, position: Any, value: Any): Any = integerTensorOp(x) {
-        val mask = 1L shl shiftValue(position)
-        if (value.toBooleanValue()) it or mask else it and mask.inv()
-    }
+
+    override fun countZeros(x: Any): Any =
+        integerTensorOp(x, DType.INT32) {
+            (Long.SIZE_BITS - it.countOneBits()).toLong()
+        }
+
+    override fun getBit(x: Any, position: Any): Any =
+        integerTensorOp(x, DType.INT32) {
+            ((it ushr shiftValue(position)) and 1L)
+        }
+
+    override fun setBit(x: Any, position: Any, value: Any): Any =
+        integerTensorOp(x) {
+            val mask = 1L shl shiftValue(position)
+            if (value.toBooleanValue()) it or mask else it and mask.inv()
+        }
+
     override fun toggleBit(x: Any, position: Any): Any = integerTensorOp(x) { it xor (1L shl shiftValue(position)) }
+
     override fun bitwiseAnd(x: Any, y: Any): Any = integerBinaryTensorOp(x, y) { a, b -> a and b }
+
     override fun bitwiseOr(x: Any, y: Any): Any = integerBinaryTensorOp(x, y) { a, b -> a or b }
+
     override fun bitwiseXor(x: Any, y: Any): Any = integerBinaryTensorOp(x, y) { a, b -> a xor b }
+
     override fun bitwiseNot(x: Any): Any = integerTensorOp(x) { it.inv() }
 
     override fun binaryWaveInterference(waves: List<Any>, mode: String): Any {
@@ -269,27 +299,29 @@ class DefaultCpuBackend : Backend {
         tensor as? DefaultCpuTensor
             ?: throw IllegalArgumentException("Expected DefaultCpuTensor, got ${tensor::class.simpleName}")
 
-    private fun flattenValues(data: Any): List<Any> = when (data) {
-        is List<*> -> data.flatMap { if (it is List<*>) flattenValues(it) else listOf(it ?: 0) }
-        is Array<*> -> data.flatMap { if (it is Array<*>) flattenValues(it) else listOf(it ?: 0) }
-        is IntArray -> data.toList()
-        is LongArray -> data.toList()
-        is FloatArray -> data.toList()
-        is DoubleArray -> data.toList()
-        is BooleanArray -> data.toList()
-        is ByteArray -> data.map { it.toInt() }
-        is UByteArray -> data.toList()
-        else -> throw IllegalArgumentException("Unsupported data type: ${data::class.simpleName}")
-    }
+    private fun flattenValues(data: Any): List<Any> =
+        when (data) {
+            is List<*> -> data.flatMap { if (it is List<*>) flattenValues(it) else listOf(it ?: 0) }
+            is Array<*> -> data.flatMap { if (it is Array<*>) flattenValues(it) else listOf(it ?: 0) }
+            is IntArray -> data.toList()
+            is LongArray -> data.toList()
+            is FloatArray -> data.toList()
+            is DoubleArray -> data.toList()
+            is BooleanArray -> data.toList()
+            is ByteArray -> data.map { it.toInt() }
+            is UByteArray -> data.toList()
+            else -> throw IllegalArgumentException("Unsupported data type: ${data::class.simpleName}")
+        }
 
-    private fun getStorageValue(storage: TensorStorage, index: Int): Any = when (storage) {
-        is TensorStorage.PackedBooleanStorage -> storage.get(index)
-        is TensorStorage.NativeUByteStorage -> storage.get(index)
-        is TensorStorage.NativeIntStorage -> storage.get(index)
-        is TensorStorage.NativeLongStorage -> storage.get(index)
-        is TensorStorage.NativeFloatStorage -> storage.get(index)
-        is TensorStorage.NativeDoubleStorage -> storage.get(index)
-    }
+    private fun getStorageValue(storage: TensorStorage, index: Int): Any =
+        when (storage) {
+            is TensorStorage.PackedBooleanStorage -> storage.get(index)
+            is TensorStorage.NativeUByteStorage -> storage.get(index)
+            is TensorStorage.NativeIntStorage -> storage.get(index)
+            is TensorStorage.NativeLongStorage -> storage.get(index)
+            is TensorStorage.NativeFloatStorage -> storage.get(index)
+            is TensorStorage.NativeDoubleStorage -> storage.get(index)
+        }
 
     private fun setStorageValue(storage: TensorStorage, index: Int, value: Any) {
         when (storage) {
@@ -302,40 +334,45 @@ class DefaultCpuBackend : Backend {
         }
     }
 
-    private fun Any.toBooleanValue(): Boolean = when (this) {
-        is Boolean -> this
-        is Number -> toDouble() != 0.0
-        is UByte -> toInt() != 0
-        else -> false
-    }
+    private fun Any.toBooleanValue(): Boolean =
+        when (this) {
+            is Boolean -> this
+            is Number -> toDouble() != 0.0
+            is UByte -> toInt() != 0
+            else -> false
+        }
 
-    private fun Any.toIntValue(): Int = when (this) {
-        is Number -> toInt()
-        is UByte -> toInt()
-        is Boolean -> if (this) 1 else 0
-        else -> 0
-    }
+    private fun Any.toIntValue(): Int =
+        when (this) {
+            is Number -> toInt()
+            is UByte -> toInt()
+            is Boolean -> if (this) 1 else 0
+            else -> 0
+        }
 
-    private fun Any.toLongValue(): Long = when (this) {
-        is Number -> toLong()
-        is UByte -> toLong()
-        is Boolean -> if (this) 1L else 0L
-        else -> 0L
-    }
+    private fun Any.toLongValue(): Long =
+        when (this) {
+            is Number -> toLong()
+            is UByte -> toLong()
+            is Boolean -> if (this) 1L else 0L
+            else -> 0L
+        }
 
-    private fun Any.toFloatValue(): Float = when (this) {
-        is Number -> toFloat()
-        is UByte -> toFloat()
-        is Boolean -> if (this) 1f else 0f
-        else -> 0f
-    }
+    private fun Any.toFloatValue(): Float =
+        when (this) {
+            is Number -> toFloat()
+            is UByte -> toFloat()
+            is Boolean -> if (this) 1f else 0f
+            else -> 0f
+        }
 
-    private fun Any.toDoubleValue(): Double = when (this) {
-        is Number -> toDouble()
-        is UByte -> toDouble()
-        is Boolean -> if (this) 1.0 else 0.0
-        else -> 0.0
-    }
+    private fun Any.toDoubleValue(): Double =
+        when (this) {
+            is Number -> toDouble()
+            is UByte -> toDouble()
+            is Boolean -> if (this) 1.0 else 0.0
+            else -> 0.0
+        }
 
     private fun Int.requireNonZero(): Int {
         if (this == 0) throw ArithmeticException("Division by zero")
@@ -357,10 +394,11 @@ class DefaultCpuBackend : Backend {
         return this
     }
 
-    private fun shiftValue(value: Any): Int = when (value) {
-        is DefaultCpuTensor -> getStorageValue(value.storage, 0).toIntValue()
-        else -> value.toIntValue()
-    }
+    private fun shiftValue(value: Any): Int =
+        when (value) {
+            is DefaultCpuTensor -> getStorageValue(value.storage, 0).toIntValue()
+            else -> value.toIntValue()
+        }
 
     private fun Int.floorMod(modulus: Int): Int = ((this % modulus) + modulus) % modulus
 

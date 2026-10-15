@@ -83,7 +83,7 @@ jobs:
           CONFIGURATION: Debug
           ARCHS: arm64
           FRAMEWORKS_FOLDER_PATH: Frameworks
-          MACOSX_DEPLOYMENT_TARGET: "14.0"
+          MACOSX_DEPLOYMENT_TARGET: "15.0"
           DEPLOYMENT_TARGET_SETTING_NAME: MACOSX_DEPLOYMENT_TARGET
         run: ./gradlew embedSwiftExportForXcode --no-configuration-cache
 
