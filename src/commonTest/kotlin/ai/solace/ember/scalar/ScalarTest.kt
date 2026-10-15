@@ -1,29 +1,28 @@
 package ai.solace.ember.scalar
 
 import ai.solace.ember.dtype.DType
-import io.github.kotlinmania.klang.fp.CFloat64
 import io.github.kotlinmania.klang.fp.CFloat16
 import io.github.kotlinmania.klang.fp.CFloat32
+import io.github.kotlinmania.klang.fp.CFloat64
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ScalarTest {
-    
     @Test
     fun testFloat16Creation() {
         val s = Scalar.Float16(CFloat16.fromFloat(5.0f))
         assertEquals(DType.Float16, s.dtype)
         assertEquals(5.0f, s.toFloat(), 0.01f)
     }
-    
+
     @Test
     fun testFloat32Creation() {
         val s = Scalar.Float32(CFloat32.fromFloat(5.0f))
         assertEquals(DType.Float32, s.dtype)
         assertEquals(5.0f, s.toFloat(), 0.0001f)
     }
-    
+
     @Test
     fun testFloat64Creation() {
         val s = Scalar.Float64(CFloat64.fromDouble(5.0))
@@ -41,7 +40,7 @@ class ScalarTest {
         assertEquals(6.0, (a * b).toDouble(), 0.0)
         assertEquals(2.0 / 3.0, (a / b).toDouble(), 1e-12)
     }
-    
+
     @Test
     fun testFloat32Arithmetic() {
         val a = Scalar.Float32(CFloat32.fromFloat(5.0f))
@@ -82,21 +81,21 @@ class ScalarTest {
         assertEquals(0.75f, (a * b).toFloat(), 0.01f)
         assertEquals(3.0f, (a / b).toFloat(), 0.05f)
     }
-    
+
     @Test
     fun testInt32Arithmetic() {
         val a = Scalar.Int32(10)
         val b = Scalar.Int32(3)
-        
+
         val sum = a + b
         assertEquals(13, sum.toInt())
-        
+
         val diff = a - b
         assertEquals(7, diff.toInt())
-        
+
         val product = a * b
         assertEquals(30, product.toInt())
-        
+
         val quotient = a / b
         assertEquals(3, quotient.toInt())
     }
@@ -111,42 +110,42 @@ class ScalarTest {
         assertTrue(c >= d)
         assertTrue(c == d)
     }
-    
+
     @Test
     fun testBoolLogic() {
         val t = Scalar.Boolean(true)
         val f = Scalar.Boolean(false)
-        
+
         assertEquals(false, (!t).value)
         assertEquals(true, (!f).value)
-        
+
         assertEquals(false, (t and f).value)
         assertEquals(true, (t or f).value)
         assertEquals(true, (t xor f).value)
     }
-    
+
     @Test
     fun testFromValue() {
         val f32 = Scalar.fromValue(5.5, DType.Float32)
         assertTrue(f32 is Scalar.Float32)
         assertEquals(5.5f, f32.toFloat(), 0.0001f)
-        
+
         val i32 = Scalar.fromValue(42, DType.Int32)
         assertTrue(i32 is Scalar.Int32)
         assertEquals(42, i32.toInt())
     }
-    
+
     @Test
     fun testCrossPlatformDeterminism() {
         // This test verifies bit-exact results using CFloat32
         val a = Scalar.Float32(CFloat32.fromFloat(1.5f))
         val b = Scalar.Float32(CFloat32.fromFloat(2.5f))
-        
+
         val result = (a * b) + Scalar.Float32(CFloat32.fromFloat(3.5f))
-        
+
         // Verify the computation
         assertEquals(7.25f, result.toFloat(), 0.0001f)
-        
+
         // Bit-exact check (same bits on all platforms)
         val expectedBits = 0x40e80000 // 7.25f
         assertEquals(expectedBits, result.value.toBits())

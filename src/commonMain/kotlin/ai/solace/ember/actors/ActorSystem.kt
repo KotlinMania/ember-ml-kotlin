@@ -6,9 +6,12 @@
  */
 package ai.solace.ember.actors
 
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlin.reflect.KClass
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 /**
  * Actor reference for sending messages to actors.
@@ -18,7 +21,7 @@ interface ActorRef<M : Any> {
      * Send a message to the actor.
      */
     suspend fun send(message: M): Boolean
-    
+
     /**
      * Stop the actor.
      */
@@ -29,11 +32,10 @@ interface ActorRef<M : Any> {
  * Internal actor reference implementation.
  */
 internal class ActorRefImpl<M : Any>(
-    private val actor: Actor<M>
+    private val actor: Actor<M>,
 ) : ActorRef<M> {
-    
-    override suspend fun send(message: M): Boolean {
-        return if (actor is AbstractActor<M>) {
+    override suspend fun send(message: M): Boolean =
+        if (actor is AbstractActor<M>) {
             actor.send(message)
         } else {
             try {
@@ -43,8 +45,7 @@ internal class ActorRefImpl<M : Any>(
                 false
             }
         }
-    }
-    
+
     override suspend fun stop() {
         actor.stop()
     }
@@ -54,10 +55,9 @@ internal class ActorRefImpl<M : Any>(
  * Actor system for managing actors and their lifecycles.
  */
 class ActorSystem {
-    
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val actors = mutableMapOf<String, ActorRef<*>>()
-    
+
     /**
      * Create and start an actor.
      *
@@ -67,32 +67,30 @@ class ActorSystem {
      */
     suspend fun <M : Any> actorOf(
         factory: () -> Actor<M>,
-        name: String? = null
+        name: String? = null,
     ): ActorRef<M> {
         val actor = factory()
         val actorName = name ?: generateActorName()
-        
+
         val ref = ActorRefImpl(actor)
         actors[actorName] = ref
-        
+
         // Start the actor in the system's scope
         scope.launch {
             actor.start()
         }
-        
+
         return ref
     }
-    
+
     /**
      * Get an actor reference by name.
      *
      * @param name The name of the actor
      * @return Actor reference if found, null otherwise
      */
-    fun getActor(name: String): ActorRef<*>? {
-        return actors[name]
-    }
-    
+    fun getActor(name: String): ActorRef<*>? = actors[name]
+
     /**
      * Stop an actor by name.
      *
@@ -108,7 +106,7 @@ class ActorSystem {
             false
         }
     }
-    
+
     /**
      * Shutdown the entire actor system.
      * This will stop all actors and cancel the system scope.
@@ -117,16 +115,14 @@ class ActorSystem {
         // Stop all actors
         actors.values.forEach { it.stop() }
         actors.clear()
-        
+
         // Cancel the system scope
         scope.cancel()
         scope.coroutineContext[Job]?.join()
     }
-    
+
     /**
      * Generate a unique actor name.
      */
-    private fun generateActorName(): String {
-        return "actor-${kotlin.random.Random.nextLong()}-${kotlin.random.Random.nextInt(1000)}"
-    }
+    private fun generateActorName(): String = "actor-${kotlin.random.Random.nextLong()}-${kotlin.random.Random.nextInt(1000)}"
 }

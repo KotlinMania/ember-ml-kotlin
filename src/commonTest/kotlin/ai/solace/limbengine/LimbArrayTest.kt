@@ -4,12 +4,10 @@ import ai.solace.ember.backend.klang.LimbArray
 import ai.solace.ember.backend.klang.LimbEngine
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
 
 class LimbArrayTest {
-
     @Test
-    fun `flush applies queued operations to all elements`() {
+    fun testFlushAppliesQueuedOperationsToAllElements() {
         val first = LimbEngine(mantissa = intArrayOf(0x1234))
         val second = LimbEngine(mantissa = intArrayOf(0x00FF))
         val array = LimbArray.of(first, second)
@@ -26,11 +24,12 @@ class LimbArrayTest {
     }
 
     @Test
-    fun `auto flush threshold triggers without explicit flush`() {
-        val array = LimbArray.of(
-            LimbEngine(mantissa = intArrayOf(0x0001)),
-            autoFlushThreshold = 1,
-        )
+    fun testAutoFlushThresholdTriggersWithoutExplicitFlush() {
+        val array =
+            LimbArray.of(
+                LimbEngine(mantissa = intArrayOf(0x0001)),
+                autoFlushThreshold = 1,
+            )
 
         array.shiftLeft(1) // should flush immediately
 
@@ -39,11 +38,12 @@ class LimbArrayTest {
     }
 
     @Test
-    fun `read barrier on get triggers flush`() {
-        val array = LimbArray.of(
-            LimbEngine(mantissa = intArrayOf(0x00F0)),
-            autoFlushThreshold = Int.MAX_VALUE,
-        )
+    fun testReadBarrierOnGetTriggersFlush() {
+        val array =
+            LimbArray.of(
+                LimbEngine(mantissa = intArrayOf(0x00F0)),
+                autoFlushThreshold = Int.MAX_VALUE,
+            )
 
         array.shiftLeft(2).bitXor(intArrayOf(0x000F))
 
@@ -57,7 +57,7 @@ class LimbArrayTest {
     }
 
     @Test
-    fun `autogate off uses DAG semantics`() {
+    fun testAutogateOffUsesDagSemantics() {
         val first = LimbEngine(mantissa = intArrayOf(0x1234))
         val arr = LimbArray.of(first, autoFlushThreshold = Int.MAX_VALUE, dagEnabled = true, autoGate = false)
 
@@ -74,7 +74,7 @@ class LimbArrayTest {
     }
 
     @Test
-    fun `autogate on yields either fused or sequential result`() {
+    fun testAutogateOnYieldsEitherFusedOrSequentialResult() {
         val first = LimbEngine(mantissa = intArrayOf(0x1234))
         val arr = LimbArray.of(first, autoFlushThreshold = Int.MAX_VALUE, dagEnabled = true, autoGate = true)
 

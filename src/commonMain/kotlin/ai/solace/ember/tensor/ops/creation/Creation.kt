@@ -1,7 +1,6 @@
 package ai.solace.ember.tensor.ops.creation
 
 import ai.solace.ember.tensor.common.DType
-import ai.solace.ember.tensor.common.EmberShape
 import ai.solace.ember.tensor.common.EmberTensor
 import ai.solace.ember.tensor.common.float32
 
@@ -18,7 +17,7 @@ fun zeros(
     shape: IntArray,
     dtype: DType = float32,
     device: String = "cpu",
-    requiresGrad: Boolean = false
+    requiresGrad: Boolean = false,
 ): EmberTensor {
     // This would delegate to the backend implementation
     // For now, we'll create a list of zeros and create a tensor from it
@@ -40,7 +39,7 @@ fun ones(
     shape: IntArray,
     dtype: DType = float32,
     device: String = "cpu",
-    requiresGrad: Boolean = false
+    requiresGrad: Boolean = false,
 ): EmberTensor {
     // This would delegate to the backend implementation
     // For now, we'll create a list of ones and create a tensor from it
@@ -66,7 +65,7 @@ fun arange(
     step: Int = 1,
     dtype: DType = float32,
     device: String = "cpu",
-    requiresGrad: Boolean = false
+    requiresGrad: Boolean = false,
 ): EmberTensor {
     // This would delegate to the backend implementation
     // For now, we'll create a list of values and create a tensor from it
@@ -89,7 +88,7 @@ fun full(
     shape: IntArray,
     dtype: DType = float32,
     device: String = "cpu",
-    requiresGrad: Boolean = false
+    requiresGrad: Boolean = false,
 ): EmberTensor {
     // This would delegate to the backend implementation
     // For now, we'll create a list of values and create a tensor from it
@@ -111,14 +110,15 @@ fun eye(
     n: Int,
     dtype: DType = float32,
     device: String = "cpu",
-    requiresGrad: Boolean = false
+    requiresGrad: Boolean = false,
 ): EmberTensor {
     // This would delegate to the backend implementation
     // For now, we'll create a 2D list representing an identity matrix
-    val data = List(n) { i ->
-        List(n) { j ->
-            if (i == j) 1 else 0
+    val data =
+        List(n) { i ->
+            List(n) { j ->
+                if (i == j) 1 else 0
+            }
         }
-    }
     return EmberTensor(data, dtype, device, requiresGrad)
 }

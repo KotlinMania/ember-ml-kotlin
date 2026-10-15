@@ -24,7 +24,7 @@ data class StartTrainingMessage(
     val model: Module,
     val data: List<TrainingSample>,
     val epochs: Int,
-    val learningRate: Float
+    val learningRate: Float,
 ) : TrainingMessage()
 
 /**
@@ -33,7 +33,7 @@ data class StartTrainingMessage(
 data class ForwardPassMessage(
     val model: Module,
     val input: EmberTensor,
-    val responseChannel: kotlinx.coroutines.channels.SendChannel<ForwardPassResultMessage>? = null
+    val responseChannel: kotlinx.coroutines.channels.SendChannel<ForwardPassResultMessage>? = null,
 ) : TrainingMessage()
 
 /**
@@ -42,18 +42,22 @@ data class ForwardPassMessage(
 data class BackwardPassMessage(
     val model: Module,
     val gradOutput: EmberTensor,
-    val responseChannel: kotlinx.coroutines.channels.SendChannel<BackwardPassResultMessage>? = null
+    val responseChannel: kotlinx.coroutines.channels.SendChannel<BackwardPassResultMessage>? = null,
 ) : TrainingMessage()
 
 /**
  * Result message for forward pass.
  */
-data class ForwardPassResultMessage(val output: EmberTensor)
+data class ForwardPassResultMessage(
+    val output: EmberTensor,
+)
 
 /**
  * Result message for backward pass.
  */
-data class BackwardPassResultMessage(val gradients: Map<String, EmberTensor>)
+data class BackwardPassResultMessage(
+    val gradients: Map<String, EmberTensor>,
+)
 
 /**
  * Training progress message.
@@ -61,19 +65,20 @@ data class BackwardPassResultMessage(val gradients: Map<String, EmberTensor>)
 data class TrainingProgressMessage(
     val epoch: Int,
     val totalEpochs: Int,
-    val loss: Float
+    val loss: Float,
 )
 
 /**
  * Training completed message.
  */
-data class TrainingCompletedMessage(val finalLoss: Float)
+data class TrainingCompletedMessage(
+    val finalLoss: Float,
+)
 
 /**
  * Actor for handling training operations.
  */
 class TrainerActor : AbstractActor<TrainingMessage>() {
-    
     override suspend fun receive(message: TrainingMessage) {
         when (message) {
             is StartTrainingMessage -> handleStartTraining(message)
@@ -81,41 +86,41 @@ class TrainerActor : AbstractActor<TrainingMessage>() {
             is BackwardPassMessage -> handleBackwardPass(message)
         }
     }
-    
+
     private suspend fun handleStartTraining(message: StartTrainingMessage) {
         val model = message.model
         val data = message.data
         val epochs = message.epochs
         val learningRate = message.learningRate
-        
+
         for (epoch in 1..epochs) {
             var totalLoss = 0.0f
-            
+
             for ((input, target) in data) {
                 // Forward pass
                 val output = model.forward(input)
-                
+
                 // Compute loss (simplified - mean squared error)
                 val loss = computeMSELoss(output, target)
                 totalLoss += loss
-                
+
                 // Backward pass (simplified)
                 val gradOutput = computeMSEGradient(output, target)
                 model.backward(gradOutput)
-                
+
                 // Update parameters (simplified)
                 val gradients = emptyMap<String, EmberTensor>() // Placeholder
                 model.updateParameters(gradients, learningRate)
             }
-            
+
             val avgLoss = totalLoss / data.size
-            
+
             // Send progress update
             // In a real implementation, we would have a way to send messages to listeners
             println("Epoch $epoch/$epochs, Loss: $avgLoss")
         }
     }
-    
+
     private suspend fun handleForwardPass(message: ForwardPassMessage) {
         try {
             val output = message.model.forward(message.input)
@@ -125,7 +130,7 @@ class TrainerActor : AbstractActor<TrainingMessage>() {
             println("Error in forward pass: ${e.message}")
         }
     }
-    
+
     private suspend fun handleBackwardPass(message: BackwardPassMessage) {
         try {
             val gradInput = message.model.backward(message.gradOutput)
@@ -136,13 +141,13 @@ class TrainerActor : AbstractActor<TrainingMessage>() {
             println("Error in backward pass: ${e.message}")
         }
     }
-    
+
     private fun computeMSELoss(output: EmberTensor, target: EmberTensor): Float {
         // Simplified MSE loss computation
         // In a real implementation, this would be done using tensor operations
         return 0.5f // Placeholder
     }
-    
+
     private fun computeMSEGradient(output: EmberTensor, target: EmberTensor): EmberTensor {
         // Simplified MSE gradient computation
         // In a real implementation: 2 * (output - target) / batch_size

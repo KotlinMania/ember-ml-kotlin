@@ -22,7 +22,7 @@ class LimbEngine constructor(
     isFloat: Boolean = false,
     keepLeadingZeros: Boolean = false,
     exponentNegative: Boolean = false,
-    dagEnabled: Boolean = DEFAULT_DAG_ENABLED
+    dagEnabled: Boolean = DEFAULT_DAG_ENABLED,
 ) {
     private var mantissa: IntArray = mantissa.copyOf()
     private var exponent: IntArray = exponent.copyOf()
@@ -30,14 +30,26 @@ class LimbEngine constructor(
     private var isFloat: Boolean = isFloat
     private var keepLeadingZeros: Boolean = keepLeadingZeros
     private var exponentNegative: Boolean = exponentNegative
+
     /** When true, ops are queued (DAG). When false, ops execute eagerly. */
     var dagEnabled: Boolean = dagEnabled
 
     private sealed interface PendingOp {
-        data class Shift(val bits: Int) : PendingOp
-        data class And(val mask: IntArray) : PendingOp
-        data class Or(val mask: IntArray) : PendingOp
-        data class Xor(val mask: IntArray) : PendingOp
+        data class Shift(
+            val bits: Int,
+        ) : PendingOp
+
+        data class And(
+            val mask: IntArray,
+        ) : PendingOp
+
+        data class Or(
+            val mask: IntArray,
+        ) : PendingOp
+
+        data class Xor(
+            val mask: IntArray,
+        ) : PendingOp
     }
 
     private val pendingOps = mutableListOf<PendingOp>()
@@ -52,7 +64,7 @@ class LimbEngine constructor(
         negative = value.negative,
         isFloat = value.isFloat,
         keepLeadingZeros = value.keepLeadingZeros,
-        exponentNegative = value.exponentNegative
+        exponentNegative = value.exponentNegative,
     )
 
     constructor(
@@ -61,38 +73,40 @@ class LimbEngine constructor(
         exponent: IntArray = intArrayOf(0),
         isFloat: Boolean = false,
         exponentNegative: Boolean = false,
-        keepLeadingZeros: Boolean = false
+        keepLeadingZeros: Boolean = false,
     ) : this(
         mantissa = value,
         exponent = exponent,
         negative = negative,
         isFloat = isFloat,
         keepLeadingZeros = keepLeadingZeros,
-        exponentNegative = exponentNegative
+        exponentNegative = exponentNegative,
     )
 
     init {
         normalize()
     }
 
-    fun shift(bits: Int): LimbEngine = apply {
-        if (bits == 0) return@apply
-        if (dagEnabled) {
-            pendingOps.add(PendingOp.Shift(bits))
-        } else {
-            mantissa = if (bits > 0) shiftLeftBits(mantissa, bits) else shiftRightBits(mantissa, -bits)
-            normalize()
+    fun shift(bits: Int): LimbEngine =
+        apply {
+            if (bits == 0) return@apply
+            if (dagEnabled) {
+                pendingOps.add(PendingOp.Shift(bits))
+            } else {
+                mantissa = if (bits > 0) shiftLeftBits(mantissa, bits) else shiftRightBits(mantissa, -bits)
+                normalize()
+            }
         }
-    }
 
     fun shiftLeft(bits: Int): LimbEngine = shift(bits)
 
     fun shiftRight(bits: Int): LimbEngine = shift(-bits)
 
-    fun flush(): LimbEngine = apply {
-        flushPendingOps()
-        normalize()
-    }
+    fun flush(): LimbEngine =
+        apply {
+            flushPendingOps()
+            normalize()
+        }
 
     fun bitAnd(mask: IntArray): LimbEngine = applyMaskOp(PendingOp.And(mask))
 
@@ -100,25 +114,27 @@ class LimbEngine constructor(
 
     fun bitXor(mask: IntArray): LimbEngine = applyMaskOp(PendingOp.Xor(mask))
 
-    private fun applyMaskOp(op: PendingOp): LimbEngine = apply {
-        val sanitized = when (op) {
-            is PendingOp.Shift -> op
-            is PendingOp.And -> PendingOp.And(sanitizeMask(op.mask))
-            is PendingOp.Or -> PendingOp.Or(sanitizeMask(op.mask))
-            is PendingOp.Xor -> PendingOp.Xor(sanitizeMask(op.mask))
-        }
-        if (dagEnabled) {
-            pendingOps.add(sanitized)
-        } else {
-            when (sanitized) {
-                is PendingOp.And -> applyBitAnd(sanitized.mask)
-                is PendingOp.Or -> applyBitOr(sanitized.mask)
-                is PendingOp.Xor -> applyBitXor(sanitized.mask)
-                is PendingOp.Shift -> { /* handled elsewhere */ }
+    private fun applyMaskOp(op: PendingOp): LimbEngine =
+        apply {
+            val sanitized =
+                when (op) {
+                    is PendingOp.Shift -> op
+                    is PendingOp.And -> PendingOp.And(sanitizeMask(op.mask))
+                    is PendingOp.Or -> PendingOp.Or(sanitizeMask(op.mask))
+                    is PendingOp.Xor -> PendingOp.Xor(sanitizeMask(op.mask))
+                }
+            if (dagEnabled) {
+                pendingOps.add(sanitized)
+            } else {
+                when (sanitized) {
+                    is PendingOp.And -> applyBitAnd(sanitized.mask)
+                    is PendingOp.Or -> applyBitOr(sanitized.mask)
+                    is PendingOp.Xor -> applyBitXor(sanitized.mask)
+                    is PendingOp.Shift -> { /* handled elsewhere */ }
+                }
+                normalize()
             }
-            normalize()
         }
-    }
 
     internal fun flushPendingOps() {
         if (pendingOps.isEmpty()) return
@@ -254,7 +270,7 @@ class LimbEngine constructor(
             isFloat = isFloat,
             keepLeadingZeros = keepLeadingZeros,
             exponentNegative = exponentNegative,
-            dagEnabled = dagEnabled
+            dagEnabled = dagEnabled,
         )
     }
 
@@ -267,9 +283,13 @@ class LimbEngine constructor(
         flushPendingOps()
         return exponent.copyOf()
     }
+
     fun isNegative(): Boolean = negative
+
     fun isFloatValue(): Boolean = isFloat
+
     fun exponentIsNegative(): Boolean = exponentNegative
+
     fun isZero(): Boolean {
         flushPendingOps()
         return mantissa.size == 1 && mantissa[0] == 0
@@ -290,10 +310,11 @@ class LimbEngine constructor(
                 current = trimChunklist(quot)
             }
             val digits = builder.reverse().toString()
-            val truncated = when {
-                maxDigits != null && digits.length > maxDigits -> digits.takeLast(maxDigits)
-                else -> digits
-            }
+            val truncated =
+                when {
+                    maxDigits != null && digits.length > maxDigits -> digits.takeLast(maxDigits)
+                    else -> digits
+                }
             return signStr + truncated
         }
 
@@ -369,24 +390,25 @@ class LimbEngine constructor(
         if (isZero() || other.isZero()) return LimbEngine()
         val sign = negative.xor(other.negative)
         val outMantissa = mulChunklists(mantissa, other.mantissa)
-        val result = if (!isFloat && !other.isFloat) {
-            LimbEngine(
-                mantissa = outMantissa,
-                exponent = intArrayOf(0),
-                negative = sign
-            )
-        } else {
-            val expSum = expAsInt(this) + expAsInt(other)
-            val expNeg = expSum < 0
-            val expChunks = intToChunklist(abs(expSum))
-            LimbEngine(
-                mantissa = outMantissa,
-                exponent = expChunks,
-                negative = sign,
-                isFloat = true,
-                exponentNegative = expNeg
-            )
-        }
+        val result =
+            if (!isFloat && !other.isFloat) {
+                LimbEngine(
+                    mantissa = outMantissa,
+                    exponent = intArrayOf(0),
+                    negative = sign,
+                )
+            } else {
+                val expSum = expAsInt(this) + expAsInt(other)
+                val expNeg = expSum < 0
+                val expChunks = intToChunklist(abs(expSum))
+                LimbEngine(
+                    mantissa = outMantissa,
+                    exponent = expChunks,
+                    negative = sign,
+                    isFloat = true,
+                    exponentNegative = expNeg,
+                )
+            }
         result.normalize()
         return result
     }
@@ -404,11 +426,12 @@ class LimbEngine constructor(
             val cmp = compareAbsChunks(mantissa, other.mantissa)
             if (cmp < 0) return LimbEngine()
             val (quotient, _) = divChunk(mantissa, other.mantissa)
-            val result = LimbEngine(
-                mantissa = quotient,
-                exponent = intArrayOf(0),
-                negative = sign
-            )
+            val result =
+                LimbEngine(
+                    mantissa = quotient,
+                    exponent = intArrayOf(0),
+                    negative = sign,
+                )
             result.normalize()
             return result
         }
@@ -419,13 +442,14 @@ class LimbEngine constructor(
         val newExp = expDiff + precisionIncrease
         val expNeg = newExp < 0
         val expChunks = intToChunklist(abs(newExp))
-        val result = LimbEngine(
-            mantissa = quotient,
-            exponent = expChunks,
-            negative = sign,
-            isFloat = true,
-            exponentNegative = expNeg
-        )
+        val result =
+            LimbEngine(
+                mantissa = quotient,
+                exponent = expChunks,
+                negative = sign,
+                isFloat = true,
+                exponentNegative = expNeg,
+            )
         result.normalize()
         return result
     }
@@ -488,13 +512,14 @@ class LimbEngine constructor(
         }
         val expNeg = finalExp < 0
         val expChunks = intToChunklist(abs(finalExp))
-        val result = LimbEngine(
-            mantissa = outMantissa,
-            exponent = expChunks,
-            negative = outNegative,
-            isFloat = true,
-            exponentNegative = expNeg
-        )
+        val result =
+            LimbEngine(
+                mantissa = outMantissa,
+                exponent = expChunks,
+                negative = outNegative,
+                isFloat = true,
+                exponentNegative = expNeg,
+            )
         result.normalize()
         return result
     }
@@ -526,12 +551,13 @@ class LimbEngine constructor(
     }
 
     private fun chunkToDecimalString(chunks: IntArray, maxDigits: Int?): String {
-        val tmp = LimbEngine(
-            mantissa = chunks.copyOf(),
-            exponent = intArrayOf(0),
-            negative = false,
-            isFloat = false
-        )
+        val tmp =
+            LimbEngine(
+                mantissa = chunks.copyOf(),
+                exponent = intArrayOf(0),
+                negative = false,
+                isFloat = false,
+            )
         return tmp.toDecimalString(maxDigits)
     }
 
@@ -539,11 +565,12 @@ class LimbEngine constructor(
         if (bits <= 0) return trimChunklist(limbs.copyOf()) to intArrayOf(0)
         val quotient = shiftRightBits(limbs, bits)
         val product = mulBy2Exp(quotient, bits)
-        val remainder = if (compareAbsChunks(limbs, product) >= 0) {
-            subChunklists(limbs, product)
-        } else {
-            intArrayOf(0)
-        }
+        val remainder =
+            if (compareAbsChunks(limbs, product) >= 0) {
+                subChunklists(limbs, product)
+            } else {
+                intArrayOf(0)
+            }
         return trimChunklist(quotient) to trimChunklist(remainder)
     }
 
@@ -749,19 +776,21 @@ class LimbEngine constructor(
         private const val GROUP_SIZE = 8
         private const val BASE = 1 shl LIMB_BITS
         private val BASE_LONG = BASE.toLong()
-        private val POW2 = IntArray(LIMB_BITS + 1).also { table ->
-            var value = 1
-            for (i in 0..LIMB_BITS) {
-                table[i] = value
-                if (i < LIMB_BITS) value *= 2
+        private val POW2 =
+            IntArray(LIMB_BITS + 1).also { table ->
+                var value = 1
+                for (i in 0..LIMB_BITS) {
+                    table[i] = value
+                    if (i < LIMB_BITS) value *= 2
+                }
             }
-        }
-        private val LOW_MASK = IntArray(LIMB_BITS + 1).also { table ->
-            table[0] = 0
-            for (i in 1..LIMB_BITS) {
-                table[i] = POW2[i] - 1
+        private val LOW_MASK =
+            IntArray(LIMB_BITS + 1).also { table ->
+                table[0] = 0
+                for (i in 1..LIMB_BITS) {
+                    table[i] = POW2[i] - 1
+                }
             }
-        }
         private val nativePreferred by lazy { BitShiftConfig.resolveMode(LIMB_BITS) == BitShiftMode.NATIVE }
 
         fun alignLength(length: Int): Int {
@@ -916,10 +945,15 @@ class LimbEngine constructor(
         inline fun <T> withDagEnabled(enabled: Boolean, block: () -> T): T {
             val prev = DEFAULT_DAG_ENABLED
             DEFAULT_DAG_ENABLED = enabled
-            return try { block() } finally { DEFAULT_DAG_ENABLED = prev }
+            return try {
+                block()
+            } finally {
+                DEFAULT_DAG_ENABLED = prev
+            }
         }
 
         fun zero(): LimbEngine = LimbEngine()
+
         fun one(): LimbEngine = LimbEngine(mantissa = intArrayOf(1))
 
         fun fromDecimalString(value: String): LimbEngine {
@@ -955,13 +989,14 @@ class LimbEngine constructor(
                 exponentChunks = intToChunklist(bitsNeeded)
             }
 
-            val result = LimbEngine(
-                mantissa = mantissaChunks,
-                exponent = exponentChunks,
-                negative = negative && !chunkListAllZero(mantissaChunks),
-                isFloat = isFloat,
-                exponentNegative = exponentNegative
-            )
+            val result =
+                LimbEngine(
+                    mantissa = mantissaChunks,
+                    exponent = exponentChunks,
+                    negative = negative && !chunkListAllZero(mantissaChunks),
+                    isFloat = isFloat,
+                    exponentNegative = exponentNegative,
+                )
             result.normalize()
             return result
         }

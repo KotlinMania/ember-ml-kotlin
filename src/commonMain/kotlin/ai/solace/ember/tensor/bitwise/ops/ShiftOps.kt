@@ -2,7 +2,7 @@ package ai.solace.ember.tensor.bitwise.ops
 
 /**
  * Shift bitwise operations for Ember ML Kotlin.
- * 
+ *
  * This module provides Kotlin implementations of bitwise shift operations
  * (left_shift, right_shift, rotate_left, rotate_right).
  */
@@ -15,8 +15,11 @@ package ai.solace.ember.tensor.bitwise.ops
  * @return x shifted left by shifts bits.
  */
 fun leftShift(x: Int, shifts: Int): Int = x shl shifts
+
 fun leftShift(x: Long, shifts: Int): Long = x shl shifts
+
 fun leftShift(x: UInt, shifts: Int): UInt = x shl shifts
+
 fun leftShift(x: ULong, shifts: Int): ULong = x shl shifts
 
 /**
@@ -27,8 +30,11 @@ fun leftShift(x: ULong, shifts: Int): ULong = x shl shifts
  * @return x shifted right by shifts bits.
  */
 fun rightShift(x: Int, shifts: Int): Int = x shr shifts
+
 fun rightShift(x: Long, shifts: Int): Long = x shr shifts
+
 fun rightShift(x: UInt, shifts: Int): UInt = x shr shifts
+
 fun rightShift(x: ULong, shifts: Int): ULong = x shr shifts
 
 /**
@@ -99,12 +105,14 @@ fun rotateRight(x: UShort, shifts: Int, bitWidth: Int = 16): UShort =
  * @return Array with element-wise left shift results.
  */
 fun leftShift(x: IntArray, shifts: Int): IntArray = IntArray(x.size) { i -> x[i] shl shifts }
+
 fun leftShift(x: IntArray, shifts: IntArray): IntArray {
     require(x.size == shifts.size) { "Arrays must have the same size" }
     return IntArray(x.size) { i -> x[i] shl shifts[i] }
 }
 
 fun leftShift(x: LongArray, shifts: Int): LongArray = LongArray(x.size) { i -> x[i] shl shifts }
+
 fun leftShift(x: LongArray, shifts: IntArray): LongArray {
     require(x.size == shifts.size) { "Arrays must have the same size" }
     return LongArray(x.size) { i -> x[i] shl shifts[i] }
@@ -118,12 +126,14 @@ fun leftShift(x: LongArray, shifts: IntArray): LongArray {
  * @return Array with element-wise right shift results.
  */
 fun rightShift(x: IntArray, shifts: Int): IntArray = IntArray(x.size) { i -> x[i] shr shifts }
+
 fun rightShift(x: IntArray, shifts: IntArray): IntArray {
     require(x.size == shifts.size) { "Arrays must have the same size" }
     return IntArray(x.size) { i -> x[i] shr shifts[i] }
 }
 
 fun rightShift(x: LongArray, shifts: Int): LongArray = LongArray(x.size) { i -> x[i] shr shifts }
+
 fun rightShift(x: LongArray, shifts: IntArray): LongArray {
     require(x.size == shifts.size) { "Arrays must have the same size" }
     return LongArray(x.size) { i -> x[i] shr shifts[i] }

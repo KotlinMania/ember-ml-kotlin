@@ -6,10 +6,9 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
+import kotlinx.cinterop.nativeHeap
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.set
-import kotlinx.cinterop.nativeHeap
-import kotlinx.cinterop.value
 import kotlin.math.max
 
 /**
@@ -20,8 +19,10 @@ import kotlin.math.max
  */
 @OptIn(ExperimentalForeignApi::class)
 internal object NativeHeapTensorStorage {
-
-    data class Buffer(val ptr: CPointer<ByteVar>, val sizeBytes: Int) {
+    data class Buffer(
+        val ptr: CPointer<ByteVar>,
+        val sizeBytes: Int,
+    ) {
         fun free() = nativeHeap.free(ptr.rawValue)
     }
 

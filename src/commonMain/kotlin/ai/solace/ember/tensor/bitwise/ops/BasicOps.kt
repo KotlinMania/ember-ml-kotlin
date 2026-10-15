@@ -2,7 +2,7 @@ package ai.solace.ember.tensor.bitwise.ops
 
 /**
  * Basic bitwise operations for Ember ML Kotlin.
- * 
+ *
  * This module provides Kotlin implementations of basic bitwise operations
  * (AND, OR, XOR, NOT) compatible with the Ember ML tensor system.
  */
@@ -15,8 +15,11 @@ package ai.solace.ember.tensor.bitwise.ops
  * @return The element-wise bitwise AND result.
  */
 fun bitwiseAnd(x: Int, y: Int): Int = x and y
+
 fun bitwiseAnd(x: Long, y: Long): Long = x and y
+
 fun bitwiseAnd(x: UInt, y: UInt): UInt = x and y
+
 fun bitwiseAnd(x: ULong, y: ULong): ULong = x and y
 
 /**
@@ -27,8 +30,11 @@ fun bitwiseAnd(x: ULong, y: ULong): ULong = x and y
  * @return The element-wise bitwise OR result.
  */
 fun bitwiseOr(x: Int, y: Int): Int = x or y
+
 fun bitwiseOr(x: Long, y: Long): Long = x or y
+
 fun bitwiseOr(x: UInt, y: UInt): UInt = x or y
+
 fun bitwiseOr(x: ULong, y: ULong): ULong = x or y
 
 /**
@@ -39,8 +45,11 @@ fun bitwiseOr(x: ULong, y: ULong): ULong = x or y
  * @return The element-wise bitwise XOR result.
  */
 fun bitwiseXor(x: Int, y: Int): Int = x xor y
+
 fun bitwiseXor(x: Long, y: Long): Long = x xor y
+
 fun bitwiseXor(x: UInt, y: UInt): UInt = x xor y
+
 fun bitwiseXor(x: ULong, y: ULong): ULong = x xor y
 
 /**
@@ -50,8 +59,11 @@ fun bitwiseXor(x: ULong, y: ULong): ULong = x xor y
  * @return The bitwise NOT result.
  */
 fun bitwiseNot(x: Int): Int = x.inv()
+
 fun bitwiseNot(x: Long): Long = x.inv()
+
 fun bitwiseNot(x: UInt): UInt = x.inv()
+
 fun bitwiseNot(x: ULong): ULong = x.inv()
 
 /**
@@ -112,4 +124,5 @@ fun bitwiseXor(x: LongArray, y: LongArray): LongArray {
  * @return Array with element-wise bitwise NOT results.
  */
 fun bitwiseNot(x: IntArray): IntArray = IntArray(x.size) { i -> x[i].inv() }
+
 fun bitwiseNot(x: LongArray): LongArray = LongArray(x.size) { i -> x[i].inv() }

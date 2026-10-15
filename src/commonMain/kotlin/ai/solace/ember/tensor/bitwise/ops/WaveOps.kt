@@ -1,10 +1,11 @@
 package ai.solace.ember.tensor.bitwise.ops
 
-import kotlin.math.*
+import kotlin.math.PI
+import kotlin.math.sin
 
 /**
  * Binary wave operations for Ember ML Kotlin.
- * 
+ *
  * This module provides Kotlin implementations of operations specific to
  * binary wave processing, such as interference and propagation.
  */
@@ -15,7 +16,7 @@ import kotlin.math.*
 enum class InterferenceMode {
     XOR,
     AND,
-    OR
+    OR,
 }
 
 /**
@@ -28,23 +29,24 @@ enum class InterferenceMode {
  */
 fun binaryWaveInterference(waves: List<IntArray>, mode: InterferenceMode = InterferenceMode.XOR): IntArray {
     require(waves.isNotEmpty()) { "Input list 'waves' cannot be empty." }
-    
+
     val firstWave = waves[0]
     val result = firstWave.copyOf()
-    
+
     for (i in 1 until waves.size) {
         val wave = waves[i]
         require(wave.size == firstWave.size) { "All waves must have the same size." }
-        
+
         for (j in result.indices) {
-            result[j] = when (mode) {
-                InterferenceMode.XOR -> bitwiseXor(result[j], wave[j])
-                InterferenceMode.AND -> bitwiseAnd(result[j], wave[j])
-                InterferenceMode.OR -> bitwiseOr(result[j], wave[j])
-            }
+            result[j] =
+                when (mode) {
+                    InterferenceMode.XOR -> bitwiseXor(result[j], wave[j])
+                    InterferenceMode.AND -> bitwiseAnd(result[j], wave[j])
+                    InterferenceMode.OR -> bitwiseOr(result[j], wave[j])
+                }
         }
     }
-    
+
     return result
 }
 
@@ -53,23 +55,24 @@ fun binaryWaveInterference(waves: List<IntArray>, mode: InterferenceMode = Inter
  */
 fun binaryWaveInterference(waves: List<LongArray>, mode: InterferenceMode = InterferenceMode.XOR): LongArray {
     require(waves.isNotEmpty()) { "Input list 'waves' cannot be empty." }
-    
+
     val firstWave = waves[0]
     val result = firstWave.copyOf()
-    
+
     for (i in 1 until waves.size) {
         val wave = waves[i]
         require(wave.size == firstWave.size) { "All waves must have the same size." }
-        
+
         for (j in result.indices) {
-            result[j] = when (mode) {
-                InterferenceMode.XOR -> bitwiseXor(result[j], wave[j])
-                InterferenceMode.AND -> bitwiseAnd(result[j], wave[j])
-                InterferenceMode.OR -> bitwiseOr(result[j], wave[j])
-            }
+            result[j] =
+                when (mode) {
+                    InterferenceMode.XOR -> bitwiseXor(result[j], wave[j])
+                    InterferenceMode.AND -> bitwiseAnd(result[j], wave[j])
+                    InterferenceMode.OR -> bitwiseOr(result[j], wave[j])
+                }
         }
     }
-    
+
     return result
 }
 
@@ -88,29 +91,29 @@ fun generateBlockySin(
     frequency: Double = 1.0,
     amplitude: Double = 1.0,
     phase: Double = 0.0,
-    bitWidth: Int = 32
+    bitWidth: Int = 32,
 ): IntArray {
     require(length > 0) { "Length must be positive" }
     require(bitWidth in 1..32) { "Bit width must be between 1 and 32" }
-    
+
     val result = IntArray(length)
     val maxValue = (1 shl bitWidth) - 1
-    
+
     for (i in 0 until length) {
         val t = i.toDouble() / length
         val sinValue = sin(2.0 * PI * frequency * t + phase)
-        
+
         // Convert sine wave to blocky binary pattern
         val normalizedValue = (sinValue * amplitude + 1.0) / 2.0 // Normalize to [0, 1]
         val intValue = (normalizedValue * maxValue).toInt()
-        
+
         // Create blocky pattern by quantizing to fewer levels
         val levels = 8 // Number of discrete levels
         val quantized = ((intValue / (maxValue.toDouble() / levels)).toInt() * (maxValue / levels))
-        
+
         result[i] = quantized.coerceIn(0, maxValue)
     }
-    
+
     return result
 }
 
@@ -129,20 +132,20 @@ fun createDutyCycle(
     dutyCycle: Double,
     period: Int,
     highValue: Int = -1, // All bits set
-    lowValue: Int = 0
+    lowValue: Int = 0,
 ): IntArray {
     require(length > 0) { "Length must be positive" }
     require(dutyCycle in 0.0..1.0) { "Duty cycle must be between 0.0 and 1.0" }
     require(period > 0) { "Period must be positive" }
-    
+
     val result = IntArray(length)
     val highDuration = (period * dutyCycle).toInt()
-    
+
     for (i in 0 until length) {
         val positionInPeriod = i % period
         result[i] = if (positionInPeriod < highDuration) highValue else lowValue
     }
-    
+
     return result
 }
 
@@ -156,21 +159,23 @@ fun createDutyCycle(
  */
 fun propagate(wave: IntArray, shift: Int, wrapAround: Boolean = true): IntArray {
     val result = IntArray(wave.size)
-    
+
     for (i in wave.indices) {
-        val sourceIndex = if (wrapAround) {
-            ((i - shift) % wave.size + wave.size) % wave.size
-        } else {
-            i - shift
-        }
-        
-        result[i] = if (sourceIndex in wave.indices) {
-            wave[sourceIndex]
-        } else {
-            0 // Fill with zeros if not wrapping
-        }
+        val sourceIndex =
+            if (wrapAround) {
+                ((i - shift) % wave.size + wave.size) % wave.size
+            } else {
+                i - shift
+            }
+
+        result[i] =
+            if (sourceIndex in wave.indices) {
+                wave[sourceIndex]
+            } else {
+                0 // Fill with zeros if not wrapping
+            }
     }
-    
+
     return result
 }
 
@@ -179,21 +184,23 @@ fun propagate(wave: IntArray, shift: Int, wrapAround: Boolean = true): IntArray 
  */
 fun propagate(wave: LongArray, shift: Int, wrapAround: Boolean = true): LongArray {
     val result = LongArray(wave.size)
-    
+
     for (i in wave.indices) {
-        val sourceIndex = if (wrapAround) {
-            ((i - shift) % wave.size + wave.size) % wave.size
-        } else {
-            i - shift
-        }
-        
-        result[i] = if (sourceIndex in wave.indices) {
-            wave[sourceIndex]
-        } else {
-            0L // Fill with zeros if not wrapping
-        }
+        val sourceIndex =
+            if (wrapAround) {
+                ((i - shift) % wave.size + wave.size) % wave.size
+            } else {
+                i - shift
+            }
+
+        result[i] =
+            if (sourceIndex in wave.indices) {
+                wave[sourceIndex]
+            } else {
+                0L // Fill with zeros if not wrapping
+            }
     }
-    
+
     return result
 }
 
@@ -212,14 +219,15 @@ fun generateComplexWave(
     frequencies: List<Double>,
     amplitudes: List<Double>,
     phases: List<Double> = frequencies.map { 0.0 },
-    mode: InterferenceMode = InterferenceMode.XOR
+    mode: InterferenceMode = InterferenceMode.XOR,
 ): IntArray {
     require(frequencies.size == amplitudes.size) { "Frequencies and amplitudes must have the same size" }
     require(frequencies.size == phases.size) { "Frequencies and phases must have the same size" }
-    
-    val waves = frequencies.mapIndexed { index, frequency ->
-        generateBlockySin(length, frequency, amplitudes[index], phases[index])
-    }
-    
+
+    val waves =
+        frequencies.mapIndexed { index, frequency ->
+            generateBlockySin(length, frequency, amplitudes[index], phases[index])
+        }
+
     return binaryWaveInterference(waves, mode)
 }

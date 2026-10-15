@@ -12,8 +12,10 @@ import kotlin.math.max
  * interop; it does not cover other dtypes yet.
  */
 object KlangHeapTensorStorage {
-
-    data class Buffer(val ptr: Int, val sizeBytes: Int) {
+    data class Buffer(
+        val ptr: Int,
+        val sizeBytes: Int,
+    ) {
         fun free() = KAligned.alignedFree(ptr)
     }
 

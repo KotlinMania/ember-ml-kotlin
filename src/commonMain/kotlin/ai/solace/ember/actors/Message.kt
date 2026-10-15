@@ -20,17 +20,19 @@ sealed class SystemMessage : Message {
      * Message to start an actor.
      */
     object Start : SystemMessage()
-    
+
     /**
      * Message to stop an actor.
      */
     object Stop : SystemMessage()
-    
+
     /**
      * Message indicating an actor has failed.
      */
-    data class Failed(val error: Throwable) : SystemMessage()
-    
+    data class Failed(
+        val error: Throwable,
+    ) : SystemMessage()
+
     /**
      * Message to restart an actor.
      */
@@ -52,4 +54,6 @@ interface Request<T : Any> : Message {
 /**
  * Message containing a response.
  */
-data class Response<T>(val value: T) : Message
+data class Response<T>(
+    val value: T,
+) : Message

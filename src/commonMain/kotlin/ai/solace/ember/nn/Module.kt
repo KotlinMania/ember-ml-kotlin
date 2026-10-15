@@ -13,7 +13,7 @@ interface Module {
      * @return The output tensor.
      */
     suspend fun forward(input: EmberTensor): EmberTensor
-    
+
     /**
      * Performs a backward pass through the module.
      *
@@ -21,14 +21,14 @@ interface Module {
      * @return The gradient of the input.
      */
     suspend fun backward(gradOutput: EmberTensor): EmberTensor
-    
+
     /**
      * Gets the parameters of this module.
      *
      * @return A map of parameter names to tensors.
      */
     fun parameters(): Map<String, EmberTensor>
-    
+
     /**
      * Updates the parameters of this module.
      *
@@ -53,7 +53,7 @@ abstract class Layer : Module {
     fun train() {
         training = true
     }
-    
+
     /**
      * Sets the layer to evaluation mode.
      */

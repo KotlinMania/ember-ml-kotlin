@@ -1,19 +1,20 @@
 package ai.solace.ember.backend
 
-import ai.solace.ember.tensor.common.DType
 import ai.solace.ember.backend.storage.TensorStorage
+import ai.solace.ember.tensor.common.DType
 
 /**
  * Tensor creation utilities for the DefaultCpuBackend.
- * 
+ *
  * This class provides factory methods for creating common tensor types,
  * similar to NumPy's array creation functions.
  */
-class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
-    
+class TensorCreationUtilities(
+    private val backend: DefaultCpuBackend,
+) {
     /**
      * Creates a tensor filled with zeros.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param dtype The data type of the tensor
      * @return A tensor filled with zeros
@@ -21,14 +22,14 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
     fun zeros(shape: IntArray, dtype: DType = DType.FLOAT32): DefaultCpuBackend.DefaultCpuTensor {
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         // Fill with zeros (arrays are already zero-initialized in Kotlin)
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a tensor filled with ones.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param dtype The data type of the tensor
      * @return A tensor filled with ones
@@ -36,18 +37,18 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
     fun ones(shape: IntArray, dtype: DType = DType.FLOAT32): DefaultCpuBackend.DefaultCpuTensor {
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         // Fill with ones
         for (i in 0 until totalSize) {
             setStorageValue(storage, i, getOneValue(dtype), dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a tensor filled with a specific value.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param value The value to fill the tensor with
      * @param dtype The data type of the tensor
@@ -56,18 +57,18 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
     fun full(shape: IntArray, value: Any, dtype: DType = DType.FLOAT32): DefaultCpuBackend.DefaultCpuTensor {
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         // Fill with the specified value
         for (i in 0 until totalSize) {
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a 1D tensor with evenly spaced values.
-     * 
+     *
      * @param start The starting value (inclusive)
      * @param stop The ending value (exclusive)
      * @param step The step between values (default: 1)
@@ -78,30 +79,30 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         if (step == 0.0) {
             throw IllegalArgumentException("Step cannot be zero")
         }
-        
+
         if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
             // Empty range
             return DefaultCpuBackend.DefaultCpuTensor(
                 TensorStorage.createOptimalStorage(dtype, 0),
                 intArrayOf(0),
-                "cpu"
+                "cpu",
             )
         }
-        
+
         val size = kotlin.math.ceil(kotlin.math.abs(stop - start) / kotlin.math.abs(step)).toInt()
         val storage = TensorStorage.createOptimalStorage(dtype, size)
-        
+
         for (i in 0 until size) {
             val value = start + i * step
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, intArrayOf(size), "cpu")
     }
-    
+
     /**
      * Creates a 1D tensor with evenly spaced values over a specified interval.
-     * 
+     *
      * @param start The starting value (inclusive)
      * @param stop The ending value (inclusive)
      * @param num The number of samples to generate
@@ -112,25 +113,25 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         if (num <= 0) {
             throw IllegalArgumentException("Number of samples must be positive")
         }
-        
+
         if (num == 1) {
             return full(intArrayOf(1), start, dtype)
         }
-        
+
         val storage = TensorStorage.createOptimalStorage(dtype, num)
         val step = (stop - start) / (num - 1)
-        
+
         for (i in 0 until num) {
             val value = start + i * step
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, intArrayOf(num), "cpu")
     }
-    
+
     /**
      * Creates an identity matrix.
-     * 
+     *
      * @param n The size of the identity matrix (n x n)
      * @param dtype The data type of the tensor
      * @return An identity matrix
@@ -139,22 +140,22 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         if (n <= 0) {
             throw IllegalArgumentException("Matrix size must be positive")
         }
-        
+
         val totalSize = n * n
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         // Fill with zeros first (default), then set diagonal to ones
         for (i in 0 until n) {
             val diagonalIndex = i * n + i
             setStorageValue(storage, diagonalIndex, getOneValue(dtype), dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, intArrayOf(n, n), "cpu")
     }
-    
+
     /**
      * Creates a tensor with random values from a uniform distribution.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param low The lower bound (inclusive)
      * @param high The upper bound (exclusive)
@@ -164,21 +165,21 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
     fun randomUniform(shape: IntArray, low: Double = 0.0, high: Double = 1.0, dtype: DType = DType.FLOAT32): DefaultCpuBackend.DefaultCpuTensor {
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         val random = kotlin.random.Random.Default
         val range = high - low
-        
+
         for (i in 0 until totalSize) {
             val value = low + random.nextDouble() * range
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a tensor with random values from a normal distribution.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param mean The mean of the distribution
      * @param std The standard deviation of the distribution
@@ -188,9 +189,9 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
     fun randomNormal(shape: IntArray, mean: Double = 0.0, std: Double = 1.0, dtype: DType = DType.FLOAT32): DefaultCpuBackend.DefaultCpuTensor {
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         val random = kotlin.random.Random.Default
-        
+
         for (i in 0 until totalSize) {
             // Box-Muller transform for normal distribution
             val u1 = random.nextDouble()
@@ -199,13 +200,13 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
             val value = mean + std * z0
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a tensor with random integer values.
-     * 
+     *
      * @param shape The shape of the tensor
      * @param low The lower bound (inclusive)
      * @param high The upper bound (exclusive)
@@ -216,21 +217,21 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         if (low >= high) {
             throw IllegalArgumentException("Low must be less than high")
         }
-        
+
         val totalSize = shape.fold(1) { acc, dim -> acc * dim }
         val storage = TensorStorage.createOptimalStorage(dtype, totalSize)
-        
+
         val random = kotlin.random.Random.Default
         val range = high - low
-        
+
         for (i in 0 until totalSize) {
             val value = low + random.nextInt(range)
             setStorageValue(storage, i, value, dtype)
         }
-        
+
         return DefaultCpuBackend.DefaultCpuTensor(storage, shape, "cpu")
     }
-    
+
     /**
      * Creates a tensor like another tensor (same shape) but filled with zeros.
      */
@@ -238,7 +239,7 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         val t = tensor as DefaultCpuBackend.DefaultCpuTensor
         return zeros(t.shape, t.dtype)
     }
-    
+
     /**
      * Creates a tensor like another tensor (same shape) but filled with ones.
      */
@@ -246,7 +247,7 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         val t = tensor as DefaultCpuBackend.DefaultCpuTensor
         return ones(t.shape, t.dtype)
     }
-    
+
     /**
      * Creates a tensor like another tensor (same shape) but filled with a specific value.
      */
@@ -254,11 +255,11 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
         val t = tensor as DefaultCpuBackend.DefaultCpuTensor
         return full(t.shape, value, t.dtype)
     }
-    
+
     // Helper functions
-    
-    private fun getOneValue(dtype: DType): Any {
-        return when (dtype) {
+
+    private fun getOneValue(dtype: DType): Any =
+        when (dtype) {
             DType.BOOL -> true
             DType.UINT8 -> 1u.toUByte()
             DType.INT32 -> 1
@@ -266,8 +267,7 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
             DType.FLOAT32 -> 1.0f
             DType.FLOAT64 -> 1.0
         }
-    }
-    
+
     private fun setStorageValue(storage: TensorStorage, index: Int, value: Any, dtype: DType) {
         when (storage) {
             is TensorStorage.PackedBooleanStorage -> {
@@ -290,58 +290,52 @@ class TensorCreationUtilities(private val backend: DefaultCpuBackend) {
             }
         }
     }
-    
-    private fun convertToBoolean(value: Any): Boolean {
-        return when (value) {
+
+    private fun convertToBoolean(value: Any): Boolean =
+        when (value) {
             is Boolean -> value
             is UByte -> value.toInt() != 0
             is Number -> value.toDouble() != 0.0
             else -> false
         }
-    }
-    
-    private fun convertToUByte(value: Any): UByte {
-        return when (value) {
+
+    private fun convertToUByte(value: Any): UByte =
+        when (value) {
             is UByte -> value
             is Boolean -> if (value) 1u else 0u
             is Number -> value.toInt().coerceIn(0, 255).toUByte()
             else -> 0u
         }
-    }
-    
-    private fun convertToInt(value: Any): Int {
-        return when (value) {
+
+    private fun convertToInt(value: Any): Int =
+        when (value) {
             is UByte -> value.toInt()
             is Boolean -> if (value) 1 else 0
             is Number -> value.toInt()
             else -> 0
         }
-    }
-    
-    private fun convertToLong(value: Any): Long {
-        return when (value) {
+
+    private fun convertToLong(value: Any): Long =
+        when (value) {
             is UByte -> value.toLong()
             is Boolean -> if (value) 1L else 0L
             is Number -> value.toLong()
             else -> 0L
         }
-    }
-    
-    private fun convertToFloat(value: Any): Float {
-        return when (value) {
+
+    private fun convertToFloat(value: Any): Float =
+        when (value) {
             is UByte -> value.toFloat()
             is Boolean -> if (value) 1f else 0f
             is Number -> value.toFloat()
             else -> 0f
         }
-    }
-    
-    private fun convertToDouble(value: Any): Double {
-        return when (value) {
+
+    private fun convertToDouble(value: Any): Double =
+        when (value) {
             is UByte -> value.toDouble()
             is Boolean -> if (value) 1.0 else 0.0
             is Number -> value.toDouble()
             else -> 0.0
         }
-    }
 }

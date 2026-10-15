@@ -7,13 +7,11 @@ import io.github.kotlinmania.klang.mem.GlobalHeap
 import io.github.kotlinmania.klang.mem.KAligned
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.IntVar
-import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.get
+import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.set
-import kotlinx.cinterop.value
 import kotlin.math.roundToInt
 import kotlin.time.measureTime
-import kotlin.time.Duration.Companion.milliseconds
 
 private fun benchHeap(size: Int, iters: Int): Long {
     val data = FloatArray(size) { it.toFloat() * 0.5f }
@@ -78,20 +76,21 @@ private fun benchHeapInPlace(size: Int, iters: Int): Pair<Long, Float> {
     return try {
         KlangHeapTensorStorage.writeFloat32Bulk(buf, data) // one-time ingress
         var checksum = 0f
-        val time = measureTime {
-            repeat(iters) {
-                var addr = buf.ptr
-                for (i in 0 until size) {
-                    val bits = GlobalHeap.lw(addr)
-                    // Reinterpret without constructing CFloat32; math in raw bits domain.
-                    val v = Float.fromBits(bits)
-                    val next = v * 1.0001f + 1.0f // simple math to prevent elision
-                    GlobalHeap.sw(addr, next.toRawBits())
-                    checksum += next
-                    addr += 4
+        val time =
+            measureTime {
+                repeat(iters) {
+                    var addr = buf.ptr
+                    for (i in 0 until size) {
+                        val bits = GlobalHeap.lw(addr)
+                        // Reinterpret without constructing CFloat32; math in raw bits domain.
+                        val v = Float.fromBits(bits)
+                        val next = v * 1.0001f + 1.0f // simple math to prevent elision
+                        GlobalHeap.sw(addr, next.toRawBits())
+                        checksum += next
+                        addr += 4
+                    }
                 }
-            }
-        }.inWholeMilliseconds
+            }.inWholeMilliseconds
         time to checksum
     } finally {
         buf.free()
@@ -110,18 +109,19 @@ private fun benchHeapInPlace16(size: Int, iters: Int): Pair<Long, Int> {
             addrSeed += 2
         }
         var checksum = 0
-        val time = measureTime {
-            repeat(iters) {
-                var addr = ptr
-                for (i in 0 until size) {
-                    val v = GlobalHeap.lh(addr).toInt() and 0xFFFF
-                    val next = ((v + 3) and 0xFFFF).toShort()
-                    GlobalHeap.sh(addr, next)
-                    checksum += next.toInt()
-                    addr += 2
+        val time =
+            measureTime {
+                repeat(iters) {
+                    var addr = ptr
+                    for (i in 0 until size) {
+                        val v = GlobalHeap.lh(addr).toInt() and 0xFFFF
+                        val next = ((v + 3) and 0xFFFF).toShort()
+                        GlobalHeap.sh(addr, next)
+                        checksum += next.toInt()
+                        addr += 2
+                    }
                 }
-            }
-        }.inWholeMilliseconds
+            }.inWholeMilliseconds
         time to checksum
     } finally {
         KAligned.alignedFree(ptr)
@@ -179,7 +179,7 @@ fun heapBenchMain() {
         val ratioInPlace = if (arr > 0) (heapInPlace.toDouble() / arr * 100).roundToInt() / 100.0 else Double.NaN
         val ratioNative = if (arr > 0) (native.toDouble() / arr * 100).roundToInt() / 100.0 else Double.NaN
         println(
-            "$s\t$iters\t$heap\t$heapBulk\t$heapPacked\t$heapInPlace\t$native\t$arr\t$ratioScalar\t$ratioBulk\t$ratioPacked\t$ratioInPlace\t$ratioNative\t$checksum"
+            "$s\t$iters\t$heap\t$heapBulk\t$heapPacked\t$heapInPlace\t$native\t$arr\t$ratioScalar\t$ratioBulk\t$ratioPacked\t$ratioInPlace\t$ratioNative\t$checksum",
         )
     }
 }

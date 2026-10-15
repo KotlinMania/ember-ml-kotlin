@@ -15,7 +15,7 @@ import kotlin.math.max
 class Arena(
     val basePtr: Int,
     val capacityBytes: Int,
-    private val alignment: Int = 16
+    private val alignment: Int = 16,
 ) {
     private val offset = atomic(0)
 
@@ -30,7 +30,9 @@ class Arena(
         }
     }
 
-    fun reset() { offset.value = 0 }
+    fun reset() {
+        offset.value = 0
+    }
 
     private fun align(n: Int): Int = (n + (alignment - 1)) and alignment.inv().plus(1)
 }
@@ -40,37 +42,64 @@ class Arena(
  */
 class HeapActor private constructor(
     private val arena: Arena,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
 ) {
     private val mailbox = Channel<Msg>(Channel.UNLIMITED)
 
     private sealed interface Msg
-    private data class Alloc(val bytes: Int, val reply: Channel<Int>) : Msg
-    private data class Write(val addr: Int, val data: IntArray, val reply: Channel<Unit>) : Msg
-    private data class Read(val addr: Int, val count: Int, val reply: Channel<IntArray>) : Msg
-    private data class Reset(val reply: Channel<Unit>) : Msg
+
+    private data class Alloc(
+        val bytes: Int,
+        val reply: Channel<Int>,
+    ) : Msg
+
+    private data class Write(
+        val addr: Int,
+        val data: IntArray,
+        val reply: Channel<Unit>,
+    ) : Msg
+
+    private data class Read(
+        val addr: Int,
+        val count: Int,
+        val reply: Channel<IntArray>,
+    ) : Msg
+
+    private data class Reset(
+        val reply: Channel<Unit>,
+    ) : Msg
 
     init {
         scope.launch {
             for (m in mailbox) {
                 when (m) {
                     is Alloc -> {
-                        m.reply.send(arena.alloc(m.bytes)); m.reply.close()
+                        m.reply.send(arena.alloc(m.bytes))
+                        m.reply.close()
                     }
                     is Write -> {
                         var p = m.addr
-                        m.data.forEach { w -> GlobalHeap.sw(p, w); p += 4 }
-                        m.reply.send(Unit); m.reply.close()
+                        m.data.forEach { w ->
+                            GlobalHeap.sw(p, w)
+                            p += 4
+                        }
+                        m.reply.send(Unit)
+                        m.reply.close()
                     }
                     is Read -> {
                         val out = IntArray(m.count)
                         var p = m.addr
-                        for (i in 0 until m.count) { out[i] = GlobalHeap.lw(p); p += 4 }
-                        m.reply.send(out); m.reply.close()
+                        for (i in 0 until m.count) {
+                            out[i] = GlobalHeap.lw(p)
+                            p += 4
+                        }
+                        m.reply.send(out)
+                        m.reply.close()
                     }
                     is Reset -> {
                         arena.reset()
-                        m.reply.send(Unit); m.reply.close()
+                        m.reply.send(Unit)
+                        m.reply.close()
                     }
                 }
             }
@@ -104,7 +133,7 @@ class HeapActor private constructor(
     companion object {
         fun start(
             arena: Arena,
-            scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+            scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         ): HeapActor = HeapActor(arena, scope)
     }
 }

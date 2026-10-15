@@ -1,43 +1,48 @@
 package ai.solace.ember.ops
 
 import ai.solace.ember.backend.BackendRegistry
-import ai.solace.ember.tensor.common.EmberTensor
-import ai.solace.ember.tensor.common.EmberShape
 import ai.solace.ember.tensor.common.DType
+import ai.solace.ember.tensor.common.EmberShape
+import ai.solace.ember.tensor.common.EmberTensor
 
 /**
  * Main operations dispatch object.
- * 
+ *
  * This object provides the primary interface for operations in Ember ML Kotlin.
- * It dispatches calls to the currently active backend while maintaining a 
+ * It dispatches calls to the currently active backend while maintaining a
  * consistent API across different backends.
  */
 object Ops {
-    
     // === Backend Management ===
-    
+
     /**
      * Get the name of the current active backend.
      */
-    fun getBackend(): String = ai.solace.ember.backend.getBackend()
-    
+    fun getBackend(): String =
+        ai.solace.ember.backend
+            .getBackend()
+
     /**
      * Set the active backend.
      */
-    fun setBackend(name: String): Boolean = ai.solace.ember.backend.setBackend(name)
-    
+    fun setBackend(name: String): Boolean =
+        ai.solace.ember.backend
+            .setBackend(name)
+
     /**
      * Automatically select and set the best backend based on hardware.
      */
-    fun autoSelectBackend(): String = ai.solace.ember.backend.autoSelectBackend()
-    
+    fun autoSelectBackend(): String =
+        ai.solace.ember.backend
+            .autoSelectBackend()
+
     // === Helper Functions ===
-    
+
     /**
      * Extract the backend tensor from an EmberTensor.
      */
     private fun extractBackendTensor(tensor: EmberTensor): Any = tensor.backendTensor
-    
+
     /**
      * Wrap a backend tensor in an EmberTensor.
      */
@@ -48,9 +53,9 @@ object Ops {
         val device = backend.getTensorDevice(backendTensor)
         return EmberTensor(shape, dtype, device, false, backendTensor)
     }
-    
+
     // === Basic Arithmetic Operations ===
-    
+
     /**
      * Element-wise addition of tensors.
      */
@@ -59,7 +64,7 @@ object Ops {
         val result = backend.add(extractBackendTensor(x), extractBackendTensor(y))
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Element-wise subtraction of tensors.
      */
@@ -68,7 +73,7 @@ object Ops {
         val result = backend.subtract(extractBackendTensor(x), extractBackendTensor(y))
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Element-wise multiplication of tensors.
      */
@@ -77,7 +82,7 @@ object Ops {
         val result = backend.multiply(extractBackendTensor(x), extractBackendTensor(y))
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Element-wise division of tensors.
      */
@@ -86,7 +91,7 @@ object Ops {
         val result = backend.divide(extractBackendTensor(x), extractBackendTensor(y))
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Matrix multiplication of tensors.
      */
@@ -95,9 +100,9 @@ object Ops {
         val result = backend.matmul(extractBackendTensor(x), extractBackendTensor(y))
         return wrapBackendTensor(result)
     }
-    
+
     // === Tensor Manipulation ===
-    
+
     /**
      * Cast a tensor to a different data type.
      */
@@ -106,7 +111,7 @@ object Ops {
         val result = backend.cast(extractBackendTensor(tensor), dtype)
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Reshape a tensor to a new shape.
      */
@@ -115,7 +120,7 @@ object Ops {
         val result = backend.reshape(extractBackendTensor(tensor), newShape)
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Transpose a tensor.
      */
@@ -124,9 +129,9 @@ object Ops {
         val result = backend.transpose(extractBackendTensor(tensor), axes)
         return wrapBackendTensor(result)
     }
-    
+
     // === Device Operations ===
-    
+
     /**
      * Move a tensor to a different device.
      */
@@ -135,7 +140,7 @@ object Ops {
         val result = backend.toDevice(extractBackendTensor(tensor), device)
         return wrapBackendTensor(result)
     }
-    
+
     /**
      * Get a list of available devices.
      */
@@ -143,7 +148,7 @@ object Ops {
         val backend = BackendRegistry.getCurrentBackend()
         return backend.getAvailableDevices()
     }
-    
+
     /**
      * Set the default device for tensor operations.
      */
@@ -151,7 +156,7 @@ object Ops {
         val backend = BackendRegistry.getCurrentBackend()
         backend.setDefaultDevice(device)
     }
-    
+
     /**
      * Get the default device for tensor operations.
      */
