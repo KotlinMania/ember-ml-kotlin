@@ -189,7 +189,7 @@ From ARITHMETIC_FLOAT128_PLAN.md:
 
 ✅ **Compiles clean** (macOS ARM64)
 ```bash
-cd /Volumes/stuff/Projects/ember-ml-kotlin
+cd .
 ./gradlew compileKotlinMacosArm64
 # BUILD SUCCESSFUL
 ```
