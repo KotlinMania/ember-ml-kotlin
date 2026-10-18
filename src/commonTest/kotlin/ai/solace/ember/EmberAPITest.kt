@@ -281,7 +281,7 @@ class EmberAPITest {
 
     @Test
     fun testTypeAlias() {
-        val x: Tensor = Ember.array(listOf(1.0f, 2.0f))
+        val x: ai.solace.ember.tensor.EmberTensor = Ember.array(listOf(1.0f, 2.0f))
         assertEquals(1, x.ndim)
     }
 }

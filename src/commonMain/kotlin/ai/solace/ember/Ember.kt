@@ -225,8 +225,3 @@ object Ember {
      */
     fun dtype(x: EmberTensor): DType = x.dtype
 }
-
-/**
- * Type alias for convenience (MLX-style).
- */
-typealias Tensor = EmberTensor
